@@ -1,15 +1,20 @@
 import * as Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
 import {
+  createGroundTexture,
   createSkyTexture,
   createStadiumTexture,
 } from "../assets/background";
 import { createUITextures } from "../assets/ui";
 import {
-  COIN_SHEET,
-  IMAGE_ASSETS,
-  registerImageAliases,
-} from "../assets/imageLoader";
+  createCoinTextures,
+  createFifaCorruptionTexture,
+  createInjuryCardTexture,
+  createSocialMediaHateTexture,
+  createTrophyTexture,
+  createVarTexture,
+} from "../assets/obstacles";
+import { createPlayerTextures } from "../assets/player";
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -47,35 +52,22 @@ export class PreloadScene extends Phaser.Scene {
     });
     this.load.on("complete", () => title.setText("BUILDING SCENE…"));
 
-    // Real image assets
-    for (const a of IMAGE_ASSETS) {
-      this.load.image(a.key, a.path);
-    }
-    this.load.image(COIN_SHEET.key, COIN_SHEET.path);
+    // v6 baseline uses deterministic procedural textures until a full
+    // ASSET-SPEC-compliant delivery is available.
   }
 
   create() {
-    // Procedural sky (gradient + stars) — kept procedural since panorama HUD
-    // overlaps the sky band heavily.
     createSkyTexture(this);
-
-    // Stadium: prefer the real extracted image (bg-stadium-real). If not
-    // present (asset missing), fall back to procedural drawn texture.
-    if (this.textures.exists("bg-stadium-real")) {
-      const realSrc = this.textures
-        .get("bg-stadium-real")
-        .getSourceImage() as HTMLImageElement;
-      if (this.textures.exists("bg-stadium")) this.textures.remove("bg-stadium");
-      this.textures.addImage("bg-stadium", realSrc);
-    } else {
-      createStadiumTexture(this);
-    }
-
-    // Procedural UI panels / buttons / auras / particle / speech bubble
+    createStadiumTexture(this);
+    createGroundTexture(this);
     createUITextures(this);
-
-    // Register aliases for loaded images (player, coin frames)
-    registerImageAliases(this);
+    createPlayerTextures(this);
+    createVarTexture(this);
+    createFifaCorruptionTexture(this);
+    createInjuryCardTexture(this);
+    createSocialMediaHateTexture(this);
+    createCoinTextures(this);
+    createTrophyTexture(this);
 
     this.time.delayedCall(120, () => {
       this.scene.start("MainMenuScene");

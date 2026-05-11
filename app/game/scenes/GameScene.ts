@@ -84,6 +84,8 @@ const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   },
 };
 
+const PLAYER_RUN_SCALE = 1;
+
 export class GameScene extends Phaser.Scene {
   private skyBg!: Phaser.GameObjects.TileSprite;
   private stadiumBg!: Phaser.GameObjects.TileSprite;
@@ -213,12 +215,11 @@ export class GameScene extends Phaser.Scene {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setAlpha(1);
 
-    // Player — image is 201x251 (chibi #7, big-head style for visible face).
-    // Scale 0.65 → display 131x163 (head + face clear at running size).
+    // Player textures are 120x160 procedural sprites in the v6 baseline.
     this.player = this.physics.add
       .sprite(PLAYER_X, GROUND_Y - 80, "player-run1")
       .setOrigin(0.5, 1);
-    this.player.setScale(0.65);
+    this.player.setScale(PLAYER_RUN_SCALE);
     this.player.setGravityY(GRAVITY);
     this.applyRunBody();
     this.player.setDepth(10);
@@ -465,17 +466,16 @@ export class GameScene extends Phaser.Scene {
     this.sliding = true;
     this.slideTimer = SLIDE_DURATION;
     this.player.setTexture("player-slide");
-    // Squash + lean back to fake slide pose
-    this.player.setScale(0.95, 0.32);
-    this.player.setRotation(-0.45);
+    this.player.setScale(PLAYER_RUN_SCALE);
+    this.player.setRotation(0);
     this.applySlideBody();
   }
 
   private applyRunBody() {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-    // Player image is 201x251; collision covers torso + legs (skip head + arms).
-    const w = 95;
-    const h = 160;
+    // Collision covers torso + legs while keeping facial/arm motion forgiving.
+    const w = 70;
+    const h = 125;
     body.setSize(w, h, false);
     body.setOffset(
       (this.player.width - w) / 2,
@@ -485,8 +485,8 @@ export class GameScene extends Phaser.Scene {
 
   private applySlideBody() {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-    const w = 170;
-    const h = 70;
+    const w = 110;
+    const h = 55;
     body.setSize(w, h, false);
     body.setOffset(
       (this.player.width - w) / 2,
@@ -499,7 +499,7 @@ export class GameScene extends Phaser.Scene {
     this.sliding = false;
     this.applyRunBody();
     this.player.setTexture("player-run1");
-    this.player.setScale(0.65);
+    this.player.setScale(PLAYER_RUN_SCALE);
     this.player.setRotation(0);
   }
 
@@ -711,9 +711,8 @@ export class GameScene extends Phaser.Scene {
     const speedTarget = this.superActive ? Math.min(MAX_SPEED, this.speed + 240) : this.speed;
     this.speed = Math.min(MAX_SPEED, this.speed + SPEED_RAMP * dt);
 
-    // Distance / score
+    // Distance tracks run progress; score comes from coins and obstacle clears.
     this.distance += (speedTarget * dt) / 10; // 10px == 1m
-    this.score += (speedTarget * dt) / 10;
     this.game.events.emit("hud:distance", this.distance);
     this.game.events.emit("hud:score", this.score, this.best);
 
@@ -773,8 +772,8 @@ export class GameScene extends Phaser.Scene {
         // Reset rotation when landing
         if (this.player.rotation !== 0) this.player.setRotation(0);
         // Subtle running bob
-        const bob = 0.65 + Math.sin(this.time.now * 0.024) * 0.012;
-        this.player.setScale(0.65, bob);
+        const bob = PLAYER_RUN_SCALE + Math.sin(this.time.now * 0.024) * 0.018;
+        this.player.setScale(PLAYER_RUN_SCALE, bob);
         this.runFrameTimer += delta * (this.superActive ? 1.6 : 1);
         if (this.runFrameTimer > 110) {
           this.runFrameTimer = 0;
