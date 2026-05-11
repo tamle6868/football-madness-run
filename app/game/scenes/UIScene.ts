@@ -15,8 +15,6 @@ export class UIScene extends Phaser.Scene {
   private dailyBar!: Phaser.GameObjects.Graphics;
   private dailyPct = 0;
   private dailyText!: Phaser.GameObjects.Text;
-  private surviveBar!: Phaser.GameObjects.Graphics;
-  private survivePct = 0;
   private superBtnGlow!: Phaser.GameObjects.Image;
   private superBtnReady = false;
   private routeNodes: Phaser.GameObjects.Graphics[] = [];
@@ -144,7 +142,7 @@ export class UIScene extends Phaser.Scene {
       })
       .setOrigin(0, 0);
 
-    // Pause button (cosmetic for now)
+    // Pause button
     const pauseBtn = this.add.graphics();
     pauseBtn.fillStyle(0x0c1432, 0.85);
     pauseBtn.fillRoundedRect(GAME_WIDTH - 80, 16, 60, 50, 10);
@@ -163,22 +161,6 @@ export class UIScene extends Phaser.Scene {
           this.scene.pause("GameScene");
         }
       });
-
-    // Survive the Madness bar (top right area)
-    const surviveX = GAME_WIDTH - 320;
-    const surviveY = 80;
-    this.add.text(surviveX, surviveY - 18, "SURVIVE THE MADNESS", {
-      fontFamily: "sans-serif",
-      fontSize: "12px",
-      color: "#a0d0ff",
-      fontStyle: "bold",
-    });
-    const surviveBg = this.add.graphics();
-    surviveBg.fillStyle(0x0c1432, 0.9);
-    surviveBg.fillRoundedRect(surviveX, surviveY, 220, 14, 6);
-    surviveBg.lineStyle(1, 0x6a8aff, 0.5);
-    surviveBg.strokeRoundedRect(surviveX, surviveY, 220, 14, 6);
-    this.surviveBar = this.add.graphics();
 
     // ---------- BOTTOM BAR ----------
     const bottomY = GAME_HEIGHT - 100;
@@ -397,7 +379,6 @@ export class UIScene extends Phaser.Scene {
       (m: number) => {
         this.distText.setText(`${Math.floor(m)}M`);
         this.routeProgress = Math.min(1, m / 2000);
-        this.survivePct = Math.min(1, m / 2000);
         this.redrawProgress();
       },
       this
@@ -481,29 +462,6 @@ export class UIScene extends Phaser.Scene {
   }
 
   private redrawProgress() {
-    // Survive bar
-    this.surviveBar.clear();
-    const surviveX = GAME_WIDTH - 320;
-    const surviveY = 80;
-    const w = 220 * this.survivePct;
-    if (w > 0) {
-      this.surviveBar.fillStyle(0xffd23a, 1);
-      this.surviveBar.fillRoundedRect(surviveX + 2, surviveY + 2, w - 4, 10, 4);
-    }
-    this.add
-      .text(surviveX + 220 - 6, surviveY - 1, `${Math.floor(this.survivePct * 100)}%`, {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(1, 0)
-      .setName("survivePct")
-      .setDepth(20);
-    // Remove old
-    const old = this.children.getByName("survivePctOld");
-    if (old) old.destroy();
-
     // Daily bar
     this.dailyBar.clear();
     const dcX = 250;

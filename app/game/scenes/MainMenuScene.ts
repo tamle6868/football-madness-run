@@ -45,7 +45,7 @@ export class MainMenuScene extends Phaser.Scene {
     const player = this.add
       .image(200, GROUND_Y, "player-run1")
       .setOrigin(0.5, 1)
-      .setScale(0.95);
+      .setScale(1.25);
     let frame = 0;
     this.time.addEvent({
       delay: 110,
@@ -56,9 +56,9 @@ export class MainMenuScene extends Phaser.Scene {
       },
     });
 
-    // Speech bubble — positioned high & right so it never covers the chibi's face
+    // Speech bubble — kept left of the instructions so the menu stays readable.
     const bubble = this.add
-      .image(player.x + 170, player.y - 260, "speech-bubble")
+      .image(player.x + 40, player.y - 300, "speech-bubble")
       .setScale(0.8);
     const siuu = this.add
       .text(bubble.x, bubble.y - 14, "SIUUUU!", {
