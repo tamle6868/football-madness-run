@@ -15,74 +15,12 @@ import {
   SPEED_RAMP,
   SUPER_DURATION,
 } from "../constants";
-
-type ObstacleKind = "var" | "corruption" | "injury" | "hate";
-
-interface ObstacleSpec {
-  kind: ObstacleKind;
-  textureKey: string;
-  scale: number;
-  /** offset of bottom of sprite to GROUND_Y (positive = floating up) */
-  liftOffset: number;
-  /** body width relative to display */
-  bodyW: number;
-  bodyH: number;
-  /** extra vertical body offset within sprite */
-  bodyOffsetY: number;
-  /** Whether the player can clear this obstacle by sliding */
-  slideClears: boolean;
-  /** Whether the player can clear this obstacle by jumping */
-  jumpClears: boolean;
-}
-
-// Real PNG sprites are ~270-325px wide; scale down so on-screen size matches
-// the original procedural obstacles (~180-220px tall).
-const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
-  var: {
-    kind: "var",
-    textureKey: "obs-var",
-    scale: 0.48,
-    liftOffset: 0,
-    bodyW: 0.55,
-    bodyH: 0.9,
-    bodyOffsetY: 0,
-    slideClears: false,
-    jumpClears: true,
-  },
-  corruption: {
-    kind: "corruption",
-    textureKey: "obs-corruption",
-    scale: 0.48,
-    liftOffset: 0,
-    bodyW: 0.55,
-    bodyH: 0.85,
-    bodyOffsetY: 10,
-    slideClears: false,
-    jumpClears: true,
-  },
-  injury: {
-    kind: "injury",
-    textureKey: "obs-injury",
-    scale: 0.45,
-    liftOffset: 0,
-    bodyW: 0.65,
-    bodyH: 0.9,
-    bodyOffsetY: 0,
-    slideClears: false,
-    jumpClears: true,
-  },
-  hate: {
-    kind: "hate",
-    textureKey: "obs-hate",
-    scale: 0.46,
-    liftOffset: 0,
-    bodyW: 0.7,
-    bodyH: 0.7,
-    bodyOffsetY: 12,
-    slideClears: false,
-    jumpClears: true,
-  },
-};
+import {
+  OBSTACLE_KINDS,
+  OBSTACLES,
+  type ObstacleKind,
+  type ObstacleSpec,
+} from "../assets/manifest";
 
 const PLAYER_RUN_SCALE = 1;
 
@@ -381,8 +319,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnObstacle() {
-    const kinds: ObstacleKind[] = ["var", "corruption", "injury", "hate"];
-    const kind = kinds[Phaser.Math.Between(0, kinds.length - 1)];
+    const kind = this.pickObstacleKind();
     const spec = OBSTACLES[kind];
 
     const obs = this.physics.add.sprite(
@@ -395,15 +332,32 @@ export class GameScene extends Phaser.Scene {
     obs.setDepth(8);
     obs.body!.allowGravity = false;
     const body = obs.body as Phaser.Physics.Arcade.Body;
-    body.setSize(obs.displayWidth * spec.bodyW, obs.displayHeight * spec.bodyH, false);
+    body.setSize(obs.width * spec.bodyW, obs.height * spec.bodyH, false);
     body.setOffset(
       (obs.width - obs.width * spec.bodyW) / 2,
-      (obs.height - obs.height * spec.bodyH) - spec.bodyOffsetY
+      Math.max(0, obs.height - obs.height * spec.bodyH - spec.bodyOffsetY)
     );
 
     obs.setData("spec", spec);
     obs.setData("scored", false);
     this.obstacles.add(obs);
+  }
+
+  private pickObstacleKind(): ObstacleKind {
+    const available = OBSTACLE_KINDS.filter(
+      (kind) => this.distance >= OBSTACLES[kind].minDistance
+    );
+    const pool = available.length > 0 ? available : OBSTACLE_KINDS;
+    const totalWeight = pool.reduce(
+      (sum, kind) => sum + OBSTACLES[kind].weight,
+      0
+    );
+    let roll = Phaser.Math.FloatBetween(0, totalWeight);
+    for (const kind of pool) {
+      roll -= OBSTACLES[kind].weight;
+      if (roll <= 0) return kind;
+    }
+    return pool[pool.length - 1];
   }
 
   private spawnCoinPattern() {
@@ -572,6 +526,11 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    const spec = obs.getData("spec") as ObstacleSpec | undefined;
+    if (spec && this.isAvoidingObstacle(spec, obs)) {
+      return;
+    }
+
     if (this.shieldCharges > 0) {
       this.shieldCharges--;
       this.cameras.main.flash(220, 80, 180, 255);
@@ -594,6 +553,22 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.triggerGameOver(obs);
+  }
+
+  private isAvoidingObstacle(
+    spec: ObstacleSpec,
+    obs: Phaser.Physics.Arcade.Sprite
+  ) {
+    if (this.sliding && (spec.avoidance === "slide" || spec.avoidance === "both")) {
+      return true;
+    }
+    if (spec.avoidance !== "jump" && spec.avoidance !== "both") {
+      return false;
+    }
+
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+    const obstacleBody = obs.body as Phaser.Physics.Arcade.Body;
+    return playerBody.bottom < obstacleBody.top + 18;
   }
 
   private spawnHitBurst(x: number, y: number) {
@@ -735,7 +710,8 @@ export class GameScene extends Phaser.Scene {
       o.x += moveX;
       if (!o.getData("scored") && o.x + o.displayWidth / 2 < PLAYER_X - 20) {
         o.setData("scored", true);
-        this.score += 25;
+        const spec = o.getData("spec") as ObstacleSpec | undefined;
+        this.score += spec?.clearScore ?? 25;
       }
       if (o.x < -240) {
         o.destroy();

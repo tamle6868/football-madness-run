@@ -8,6 +8,7 @@ import {
 import { createUITextures } from "../assets/ui";
 import {
   createCoinTextures,
+  createDroneTexture,
   createFifaCorruptionTexture,
   createInjuryCardTexture,
   createSocialMediaHateTexture,
@@ -66,6 +67,7 @@ export class PreloadScene extends Phaser.Scene {
     createFifaCorruptionTexture(this);
     createInjuryCardTexture(this);
     createSocialMediaHateTexture(this);
+    createDroneTexture(this);
     createCoinTextures(this);
     createTrophyTexture(this);
 

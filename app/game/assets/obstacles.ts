@@ -473,6 +473,126 @@ export function createVarTexture(scene: Phaser.Scene) {
 }
 
 /**
+ * Drone — flying slide-only obstacle. It sits above head height so a normal
+ * run/jump into its body is dangerous, while a slide passes beneath.
+ */
+export function createDroneTexture(scene: Phaser.Scene) {
+  const W = 220;
+  const H = 120;
+  commitCanvasAsTexture(
+    scene,
+    "obs-drone",
+    (ctx, w, h) => {
+      ctx.clearRect(0, 0, w, h);
+
+      // Rotor blur discs
+      const rotorY = 32;
+      const rotorXs = [46, w - 46];
+      for (const x of rotorXs) {
+        const blur = ctx.createRadialGradient(x, rotorY, 4, x, rotorY, 42);
+        blur.addColorStop(0, "rgba(255,255,255,0.65)");
+        blur.addColorStop(0.45, "rgba(160,210,255,0.22)");
+        blur.addColorStop(1, "rgba(160,210,255,0)");
+        ctx.fillStyle = blur;
+        ctx.beginPath();
+        ctx.ellipse(x, rotorY, 42, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x - 34, rotorY);
+        ctx.lineTo(x + 34, rotorY);
+        ctx.moveTo(x, rotorY - 10);
+        ctx.lineTo(x, rotorY + 10);
+        ctx.stroke();
+      }
+
+      // Arms
+      ctx.strokeStyle = "#0b1020";
+      ctx.lineWidth = 10;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(60, 58);
+      ctx.lineTo(w / 2 - 34, 66);
+      ctx.moveTo(w - 60, 58);
+      ctx.lineTo(w / 2 + 34, 66);
+      ctx.stroke();
+      ctx.strokeStyle = "#5d7db8";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(62, 58);
+      ctx.lineTo(w / 2 - 34, 66);
+      ctx.moveTo(w - 62, 58);
+      ctx.lineTo(w / 2 + 34, 66);
+      ctx.stroke();
+
+      // Body shell
+      const bodyGrad = ctx.createLinearGradient(0, 40, 0, h);
+      bodyGrad.addColorStop(0, "#a0d0ff");
+      bodyGrad.addColorStop(0.4, "#365ea8");
+      bodyGrad.addColorStop(1, "#10224e");
+      ctx.fillStyle = bodyGrad;
+      rounded(ctx, w / 2 - 48, 42, 96, 50, 14);
+      ctx.fill();
+      ctx.strokeStyle = "#061126";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Camera lens
+      ctx.fillStyle = "#07101f";
+      ctx.beginPath();
+      ctx.arc(w / 2, 70, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#3cf2ff";
+      ctx.beginPath();
+      ctx.arc(w / 2, 70, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.8)";
+      ctx.beginPath();
+      ctx.arc(w / 2 - 4, 66, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Warning stripe
+      ctx.fillStyle = "#ffd23a";
+      rounded(ctx, w / 2 - 32, 88, 64, 9, 4);
+      ctx.fill();
+      ctx.fillStyle = "#0b1020";
+      ctx.font = "900 10px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("LOW BRIDGE", w / 2, 93);
+
+      // Red warning LEDs
+      for (const x of [w / 2 - 58, w / 2 + 58]) {
+        ctx.fillStyle = "#ff3845";
+        ctx.shadowColor = "#ff3845";
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(x, 58, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      // Small down arrows to visually teach slide.
+      ctx.fillStyle = "#ffffff";
+      ctx.globalAlpha = 0.86;
+      for (const x of [w / 2 - 80, w / 2 + 80]) {
+        ctx.beginPath();
+        ctx.moveTo(x - 8, 98);
+        ctx.lineTo(x + 8, 98);
+        ctx.lineTo(x, 110);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    },
+    W,
+    H
+  );
+}
+
+/**
  * Coin — gold disc with football pattern. We render 6 frames for spin.
  */
 export function createCoinTextures(scene: Phaser.Scene) {
