@@ -105,11 +105,11 @@ export function createFifaCorruptionTexture(scene: Phaser.Scene) {
       ctx.font = "bold 11px sans-serif";
       ctx.fillText("CORRUPTION", w / 2, h - 22);
 
-      // Small angry figure on top (parody Arab buyer)
+      // Small crooked official figure on top.
       ctx.save();
       ctx.translate(w / 2, 30);
-      // Robe
-      ctx.fillStyle = "#f3eedd";
+      // Suit body
+      ctx.fillStyle = "#18233f";
       ctx.beginPath();
       ctx.moveTo(-22, 30);
       ctx.lineTo(-26, 0);
@@ -120,31 +120,35 @@ export function createFifaCorruptionTexture(scene: Phaser.Scene) {
       ctx.strokeStyle = "rgba(0,0,0,0.5)";
       ctx.lineWidth = 1.5;
       ctx.stroke();
+      // Shirt and tie
+      ctx.fillStyle = "#f8f2dc";
+      ctx.beginPath();
+      ctx.moveTo(-8, 0);
+      ctx.lineTo(0, 13);
+      ctx.lineTo(8, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#ff3845";
+      ctx.beginPath();
+      ctx.moveTo(0, 4);
+      ctx.lineTo(5, 20);
+      ctx.lineTo(0, 28);
+      ctx.lineTo(-5, 20);
+      ctx.closePath();
+      ctx.fill();
       // Head
       ctx.fillStyle = "#e6c4a0";
       ctx.beginPath();
       ctx.ellipse(0, -10, 12, 13, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
-      // Headdress (red checked keffiyeh)
-      ctx.fillStyle = "#d63a3a";
-      ctx.beginPath();
-      ctx.moveTo(-16, -16);
-      ctx.lineTo(0, -26);
-      ctx.lineTo(16, -16);
-      ctx.lineTo(14, -2);
-      ctx.lineTo(-14, -2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(-14, -14, 28, 2);
-      ctx.fillRect(-14, -10, 28, 2);
-      ctx.fillRect(-14, -6, 28, 2);
-      // Beard
+      // Hair
       ctx.fillStyle = "#1a1208";
       ctx.beginPath();
-      ctx.moveTo(-10, -4);
-      ctx.quadraticCurveTo(0, 8, 10, -4);
+      ctx.moveTo(-13, -15);
+      ctx.quadraticCurveTo(0, -28, 13, -15);
+      ctx.lineTo(13, -8);
+      ctx.quadraticCurveTo(0, -12, -13, -8);
       ctx.closePath();
       ctx.fill();
       // Eyes
@@ -153,9 +157,18 @@ export function createFifaCorruptionTexture(scene: Phaser.Scene) {
       ctx.arc(-4, -10, 1.6, 0, Math.PI * 2);
       ctx.arc(4, -10, 1.6, 0, Math.PI * 2);
       ctx.fill();
+      // Cash note
+      ctx.fillStyle = "#32d264";
+      rounded(ctx, 13, 4, 22, 12, 2);
+      ctx.fill();
+      ctx.fillStyle = "#0b1020";
+      ctx.font = "900 9px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("$", 24, 10);
       ctx.restore();
 
-      // Angry emoji bubble
+      // Red alert bubble
       ctx.fillStyle = "#ffffff";
       ctx.strokeStyle = "rgba(0,0,0,0.6)";
       ctx.lineWidth = 2;
@@ -302,7 +315,7 @@ function drawStar(
 }
 
 /**
- * Social Media Hate — brown poop pile with hate emoji bubbles.
+ * Social Media Hate - brown mud pile with warning bubbles.
  * Low obstacle: slide under (taller version); short version: jump.
  */
 export function createSocialMediaHateTexture(scene: Phaser.Scene) {
@@ -354,7 +367,7 @@ export function createSocialMediaHateTexture(scene: Phaser.Scene) {
       ctx.closePath();
       ctx.fill();
 
-      // Cute eyes (parody hate emoji)
+      // Angry face
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
       ctx.ellipse(w / 2 - 14, h - 56, 5, 6, 0, 0, Math.PI * 2);
@@ -380,22 +393,52 @@ export function createSocialMediaHateTexture(scene: Phaser.Scene) {
       ctx.arc(28, 28, 18, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(36, 40);
+      ctx.lineTo(30, 40);
+      ctx.lineTo(27, 49);
+      ctx.lineTo(21, 49);
+      ctx.lineTo(22, 38);
+      ctx.lineTo(15, 38);
+      ctx.lineTo(15, 22);
+      ctx.lineTo(34, 22);
+      ctx.lineTo(39, 27);
+      ctx.lineTo(39, 36);
+      ctx.closePath();
+      ctx.fillStyle = "#ff3845";
+      ctx.fill();
+      ctx.strokeStyle = "#0b1020";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
       // Thumbs down
       ctx.fillStyle = "#ff3845";
       ctx.font = "900 18px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("👎", 28, 30);
-
-      // Second bubble (poop emoji)
+      ctx.globalAlpha = 1;
+      // Second warning bubble.
       ctx.fillStyle = "#ffffff";
       ctx.beginPath();
       ctx.arc(w - 28, 18, 16, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
+      ctx.fillStyle = "#ffd23a";
+      ctx.beginPath();
+      ctx.moveTo(w - 28, 4);
+      ctx.lineTo(w - 42, 28);
+      ctx.lineTo(w - 14, 28);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#0b1020";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = "#0b1020";
+      ctx.font = "900 17px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("!", w - 28, 22);
       ctx.fillStyle = "#6b3a14";
       ctx.font = "900 16px sans-serif";
-      ctx.fillText("💩", w - 28, 20);
     },
     W,
     H

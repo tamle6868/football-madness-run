@@ -23,13 +23,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    // Loading background + bar (drawn before any image loads)
     const bg = this.add.graphics();
     bg.fillStyle(0x0b1020, 1);
     bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     const title = this.add
-      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, "LOADING ASSETS…", {
+      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, "LOADING ASSETS...", {
         fontFamily: "sans-serif",
         fontSize: "28px",
         color: "#ffffff",
@@ -51,10 +50,7 @@ export class PreloadScene extends Phaser.Scene {
       fill.fillStyle(0xffd23a, 1);
       fill.fillRoundedRect(barX + 2, barY + 2, (barW - 4) * p, barH - 4, 6);
     });
-    this.load.on("complete", () => title.setText("BUILDING SCENE…"));
-
-    // v6 baseline uses deterministic procedural textures until a full
-    // ASSET-SPEC-compliant delivery is available.
+    this.load.on("complete", () => title.setText("BUILDING SCENE..."));
   }
 
   create() {

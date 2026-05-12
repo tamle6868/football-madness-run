@@ -10,52 +10,53 @@ export function createSkyTexture(scene: Phaser.Scene) {
     "bg-sky",
     (ctx, w, h) => {
       const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, "#0b0f24");
-      grad.addColorStop(0.45, "#1a2348");
-      grad.addColorStop(1, "#3b4a8a");
+      grad.addColorStop(0, "#070b19");
+      grad.addColorStop(0.5, "#111b3d");
+      grad.addColorStop(1, "#28366d");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      // Stars / distant lights
       const rand = new Rand(1337);
-      for (let i = 0; i < 80; i++) {
+
+      // Distant pin lights.
+      for (let i = 0; i < 55; i++) {
         const x = rand.range(0, w);
-        const y = rand.range(0, h * 0.6);
-        const r = rand.range(0.4, 1.6);
-        ctx.fillStyle = `rgba(255,255,220,${rand.range(0.3, 0.9)})`;
+        const y = rand.range(0, h * 0.52);
+        const r = rand.range(0.5, 1.4);
+        ctx.fillStyle = `rgba(255,245,190,${rand.range(0.35, 0.9)})`;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Stadium lights / spotlights
-      const lights = 6;
-      for (let i = 0; i < lights; i++) {
-        const cx = (w / lights) * (i + 0.5);
-        const cy = h * 0.35;
-        const grad2 = ctx.createRadialGradient(cx, cy, 8, cx, cy, 220);
-        grad2.addColorStop(0, "rgba(255,255,200,0.55)");
-        grad2.addColorStop(0.4, "rgba(255,255,200,0.12)");
-        grad2.addColorStop(1, "rgba(255,255,200,0)");
-        ctx.fillStyle = grad2;
-        ctx.fillRect(cx - 240, cy - 240, 480, 480);
+      // Stadium floodlight bloom, kept broad and soft so the HUD remains legible.
+      const lightXs = [120, 360, 640, 920, 1160];
+      for (const cx of lightXs) {
+        const cy = h * 0.32;
+        const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, 230);
+        halo.addColorStop(0, "rgba(255,255,230,0.72)");
+        halo.addColorStop(0.32, "rgba(190,215,255,0.2)");
+        halo.addColorStop(1, "rgba(80,110,180,0)");
+        ctx.fillStyle = halo;
+        ctx.fillRect(cx - 250, cy - 250, 500, 500);
 
-        // Light fixture
-        ctx.fillStyle = "rgba(255,255,255,0.95)";
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,245,0.95)";
+        for (let j = 0; j < 4; j++) {
+          ctx.beginPath();
+          ctx.arc(cx - 18 + j * 12, cy, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
 
-      // Confetti drifting in air
+      // Sparse celebration confetti.
       const colors = ["#ff3845", "#ffc83a", "#32d264", "#1d56c2", "#ffffff", "#ff9a3c"];
-      for (let i = 0; i < 220; i++) {
+      for (let i = 0; i < 95; i++) {
         const x = rand.range(0, w);
-        const y = rand.range(0, h);
+        const y = rand.range(0, h * 0.86);
         const cw = rand.range(2, 5);
-        const ch = rand.range(3, 7);
+        const ch = rand.range(4, 8);
         ctx.fillStyle = rand.pick(colors);
-        ctx.globalAlpha = rand.range(0.4, 0.9);
+        ctx.globalAlpha = rand.range(0.35, 0.8);
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(rand.range(0, Math.PI * 2));
@@ -77,108 +78,111 @@ export function createStadiumTexture(scene: Phaser.Scene) {
     scene,
     "bg-stadium",
     (ctx, w, h) => {
-      // Faded stadium tiers
-      const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, "rgba(20,28,72,0)");
-      grad.addColorStop(0.3, "rgba(20,28,72,0.9)");
-      grad.addColorStop(1, "rgba(8,10,26,1)");
-      ctx.fillStyle = grad;
+      const bg = ctx.createLinearGradient(0, 0, 0, h);
+      bg.addColorStop(0, "#171f48");
+      bg.addColorStop(0.38, "#10183a");
+      bg.addColorStop(1, "#070a18");
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // Stadium silhouette curve (bowl) — subtle dome on top
-      ctx.fillStyle = "rgba(10,14,42,1)";
+      // Curved roof and upper tier silhouette.
+      ctx.fillStyle = "#080c20";
       ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h * 0.45);
-      ctx.quadraticCurveTo(w / 2, h * 0.05, w, h * 0.45);
-      ctx.lineTo(w, h);
+      ctx.moveTo(0, h * 0.36);
+      ctx.quadraticCurveTo(w / 2, h * 0.02, w, h * 0.36);
+      ctx.lineTo(w, h * 0.55);
+      ctx.quadraticCurveTo(w / 2, h * 0.18, 0, h * 0.55);
       ctx.closePath();
       ctx.fill();
 
-      // Crowd: pixel grid of colored dots, denser in the middle
+      // Roof trusses.
+      ctx.strokeStyle = "rgba(135,165,230,0.2)";
+      ctx.lineWidth = 3;
+      for (let x = -120; x < w + 120; x += 120) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + 90, h * 0.32);
+        ctx.stroke();
+      }
+
+      // Front floodlight beams falling onto the pitch.
+      ctx.globalCompositeOperation = "lighter";
+      for (const cx of [240, 560, 920, 1260]) {
+        const beam = ctx.createLinearGradient(cx, h * 0.12, cx + 80, h);
+        beam.addColorStop(0, "rgba(255,255,230,0.2)");
+        beam.addColorStop(1, "rgba(255,240,160,0)");
+        ctx.fillStyle = beam;
+        ctx.beginPath();
+        ctx.moveTo(cx - 36, h * 0.2);
+        ctx.lineTo(cx + 74, h);
+        ctx.lineTo(cx + 220, h);
+        ctx.lineTo(cx + 36, h * 0.2);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+
+      // Banner row creates visual rhythm without noisy pixel static.
+      const bannerY = h * 0.38;
+      const bannerH = 34;
+      const banners = ["#ff3845", "#ffd23a", "#1d56c2", "#32d264", "#ffffff", "#ff9a3c"];
+      for (let x = -40, i = 0; x < w + 80; x += 82, i++) {
+        ctx.fillStyle = banners[i % banners.length];
+        ctx.beginPath();
+        ctx.moveTo(x, bannerY);
+        ctx.lineTo(x + 68, bannerY);
+        ctx.lineTo(x + 34, bannerY + bannerH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "rgba(0,0,0,0.55)";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      // Crowd blocks: larger cells and horizontal row shadows read cleaner on mobile.
       const rand = new Rand(424242);
-      const crowdTop = h * 0.5;
-      const crowdBottom = h * 0.95;
-      const colors = [
-        "#ffd23a",
-        "#ff3845",
-        "#ffffff",
-        "#1d56c2",
-        "#32d264",
-        "#ff9a3c",
-        "#9a4cff",
-      ];
-      const cols = 200;
-      const rows = 22;
-      const cellW = w / cols;
-      const cellH = (crowdBottom - crowdTop) / rows;
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const cx = c * cellW + rand.range(-cellW * 0.3, cellW * 0.3);
-          const cy = crowdTop + r * cellH + rand.range(-cellH * 0.3, cellH * 0.3);
-          if (rand.next() < 0.18) continue;
-          const alpha = 0.5 + rand.range(0, 0.4);
+      const crowdTop = h * 0.56;
+      const crowdBottom = h * 0.93;
+      const rowH = 13;
+      const colors = ["#ffd23a", "#ff3845", "#e8edf8", "#1d56c2", "#32d264", "#ff9a3c", "#8f65ff"];
+
+      for (let y = crowdTop; y < crowdBottom; y += rowH) {
+        ctx.fillStyle = y / rowH % 2 < 1 ? "rgba(255,255,255,0.035)" : "rgba(0,0,0,0.16)";
+        ctx.fillRect(0, y, w, rowH);
+      }
+
+      for (let y = crowdTop + 4; y < crowdBottom; y += rowH) {
+        for (let x = 0; x < w; x += 10) {
+          if (rand.next() < 0.34) continue;
+          const sw = rand.range(4, 8);
+          const sh = rand.range(4, 7);
+          ctx.globalAlpha = rand.range(0.45, 0.88);
           ctx.fillStyle = rand.pick(colors);
-          ctx.globalAlpha = alpha;
-          ctx.fillRect(cx, cy, cellW * 0.85, cellH * 0.6);
+          ctx.fillRect(x + rand.range(-2, 2), y + rand.range(-2, 2), sw, sh);
         }
       }
       ctx.globalAlpha = 1;
 
-      // Bunting flags hanging from top
-      const flagColors = [
-        ["#ff3845", "#ffffff"],
-        ["#1d56c2", "#ffd23a"],
-        ["#32d264", "#ffffff"],
-        ["#ff9a3c", "#1d56c2"],
-        ["#ffffff", "#ff3845"],
-        ["#ffd23a", "#1644a8"],
-      ];
-      const flagW = 56;
-      const flagH = 38;
-      const flagY = 60;
-      // Hanging string
-      ctx.strokeStyle = "rgba(0,0,0,0.55)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      const y = flagY - 12;
-      ctx.moveTo(0, y);
-      for (let x = 0; x < w; x += 80) {
-        const cy = y + 12 + Math.sin(x * 0.07) * 6;
-        ctx.lineTo(x, cy);
-      }
-      ctx.stroke();
-
-      let fx = 8;
-      let fIdx = 0;
-      while (fx < w) {
-        const fc = flagColors[fIdx % flagColors.length];
-        // Flag pole/string
-        // Two-tone flag
-        ctx.fillStyle = fc[0];
-        ctx.beginPath();
-        ctx.moveTo(fx, flagY);
-        ctx.lineTo(fx + flagW, flagY);
-        ctx.lineTo(fx + flagW / 2, flagY + flagH);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = fc[1];
-        ctx.beginPath();
-        ctx.moveTo(fx + flagW * 0.2, flagY + 4);
-        ctx.lineTo(fx + flagW * 0.8, flagY + 4);
-        ctx.lineTo(fx + flagW / 2, flagY + flagH - 4);
-        ctx.closePath();
-        ctx.fill();
-
-        fx += flagW + 8;
-        fIdx++;
+      // Lower rail and pitch-side advertising panels.
+      ctx.fillStyle = "#060814";
+      ctx.fillRect(0, h - 28, w, 28);
+      const ads = ["MADNESS RUN", "WORLD ROUTE", "SUPER SPRINT", "VAR ZONE"];
+      for (let x = 36, i = 0; x < w; x += 310, i++) {
+        ctx.fillStyle = i % 2 === 0 ? "#10245c" : "#1b3a2a";
+        ctx.fillRect(x, h - 24, 250, 18);
+        ctx.fillStyle = "#ffd23a";
+        ctx.font = "900 13px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(ads[i % ads.length], x + 125, h - 15);
       }
 
-      // Front row barrier
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
-      ctx.fillRect(0, h - 18, w, 18);
-      ctx.fillStyle = "rgba(255,255,255,0.08)";
-      ctx.fillRect(0, h - 18, w, 3);
+      const vignette = ctx.createLinearGradient(0, 0, 0, h);
+      vignette.addColorStop(0, "rgba(0,0,0,0.08)");
+      vignette.addColorStop(0.65, "rgba(0,0,0,0)");
+      vignette.addColorStop(1, "rgba(0,0,0,0.35)");
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, w, h);
     },
     STADIUM_W,
     STADIUM_H
@@ -193,40 +197,41 @@ export function createGroundTexture(scene: Phaser.Scene) {
     scene,
     "bg-ground",
     (ctx, w, h) => {
-      // Top grass band
-      const grassH = 42;
-      const grad = ctx.createLinearGradient(0, 0, 0, grassH);
-      grad.addColorStop(0, "#5dc24a");
-      grad.addColorStop(0.5, "#3a8a2c");
-      grad.addColorStop(1, "#2a6620");
-      ctx.fillStyle = grad;
+      const grassH = 46;
+      const turf = ctx.createLinearGradient(0, 0, 0, grassH);
+      turf.addColorStop(0, "#6bd95a");
+      turf.addColorStop(0.42, "#3fa336");
+      turf.addColorStop(1, "#1f6d24");
+      ctx.fillStyle = turf;
       ctx.fillRect(0, 0, w, grassH);
 
-      // Grass blades on top edge
       const rand = new Rand(7);
-      ctx.strokeStyle = "rgba(255,255,255,0.18)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x < w; x += 4) {
-        const bh = rand.range(2, 6);
+      for (let x = 0; x < w; x += 5) {
+        const bh = rand.range(3, 9);
+        ctx.strokeStyle = rand.next() > 0.5 ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.22)";
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x + rand.range(-1, 1), -bh);
+        ctx.moveTo(x, grassH);
+        ctx.lineTo(x + rand.range(-2, 2), grassH - bh);
         ctx.stroke();
       }
 
-      // Earth/dirt below
-      const earthGrad = ctx.createLinearGradient(0, grassH, 0, h);
-      earthGrad.addColorStop(0, "#3a2412");
-      earthGrad.addColorStop(0.5, "#26160a");
-      earthGrad.addColorStop(1, "#150a04");
-      ctx.fillStyle = earthGrad;
+      ctx.fillStyle = "rgba(255,255,255,0.25)";
+      ctx.fillRect(0, 2, w, 2);
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
+      ctx.fillRect(0, grassH - 3, w, 5);
+
+      const earth = ctx.createLinearGradient(0, grassH, 0, h);
+      earth.addColorStop(0, "#312011");
+      earth.addColorStop(0.55, "#1d1208");
+      earth.addColorStop(1, "#0c0603");
+      ctx.fillStyle = earth;
       ctx.fillRect(0, grassH, w, h - grassH);
 
-      // Brick pattern in earth
-      ctx.strokeStyle = "rgba(0,0,0,0.4)";
+      ctx.strokeStyle = "rgba(0,0,0,0.42)";
       ctx.lineWidth = 1;
-      const brickH = 26;
-      const brickW = 80;
+      const brickH = 28;
+      const brickW = 86;
       for (let row = 0; row * brickH + grassH < h; row++) {
         const offset = row % 2 === 0 ? 0 : brickW / 2;
         const y = grassH + row * brickH;
@@ -241,10 +246,6 @@ export function createGroundTexture(scene: Phaser.Scene) {
           ctx.stroke();
         }
       }
-
-      // Top edge highlight
-      ctx.fillStyle = "rgba(255,255,255,0.25)";
-      ctx.fillRect(0, grassH, w, 2);
     },
     GROUND_W,
     GROUND_H

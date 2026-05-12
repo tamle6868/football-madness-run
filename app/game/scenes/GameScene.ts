@@ -122,8 +122,8 @@ export class GameScene extends Phaser.Scene {
     const stadiumNativeH =
       stadiumTex && "height" in stadiumTex ? (stadiumTex as { height: number }).height : stadiumH;
     this.stadiumBg.tileScaleY = stadiumH / stadiumNativeH;
-    // Ground tile: image is 256x96 (grass top, dirt bottom). Place so grass
-    // strip aligns with GROUND_Y, height covers down to bottom of canvas.
+    // Ground tile: grass top, dirt bottom. Place so the grass strip aligns
+    // with GROUND_Y and scale the source art into the visible band.
     const groundH = GAME_HEIGHT - GROUND_Y;
     this.groundBg = this.add.tileSprite(
       GAME_WIDTH / 2,
@@ -132,9 +132,7 @@ export class GameScene extends Phaser.Scene {
       groundH,
       "bg-ground"
     );
-    // Stretch texture vertically so 1 tile fills the band exactly (avoids
-    // grass re-appearing mid-strip).
-    this.groundBg.tileScaleY = groundH / 96;
+    this.groundBg.tileScaleY = groundH / 200;
 
     // Auras (behind player)
     this.magnetAura = this.add
@@ -408,7 +406,7 @@ export class GameScene extends Phaser.Scene {
   private spawnCoin(x: number, y: number) {
     const coin = this.physics.add.sprite(x, y, "coin-0");
     coin.setOrigin(0.5);
-    coin.setScale(0.45);
+    coin.setScale(0.52);
     coin.body!.allowGravity = false;
     coin.setDepth(9);
     const body = coin.body as Phaser.Physics.Arcade.Body;
