@@ -51,6 +51,16 @@ export class PreloadScene extends Phaser.Scene {
       fill.fillRoundedRect(barX + 2, barY + 2, (barW - 4) * p, barH - 4, 6);
     });
     this.load.on("complete", () => title.setText("BUILDING SCENE..."));
+
+    const userAssetVersion = "player-v1";
+    this.load.image("player-run1", `/assets/user/player_run_1.png?v=${userAssetVersion}`);
+    this.load.image("player-run2", `/assets/user/player_run_2.png?v=${userAssetVersion}`);
+    this.load.image("player-run3", `/assets/user/player_run_3.png?v=${userAssetVersion}`);
+    this.load.image("player-run4", `/assets/user/player_run_4.png?v=${userAssetVersion}`);
+    this.load.image("player-jump", `/assets/user/player_jump.png?v=${userAssetVersion}`);
+    this.load.image("player-slide", `/assets/user/player_slide.png?v=${userAssetVersion}`);
+    this.load.image("player-super", `/assets/user/player_super.png?v=${userAssetVersion}`);
+    this.load.image("logo", `/assets/user/logo_full.png?v=${userAssetVersion}`);
   }
 
   create() {

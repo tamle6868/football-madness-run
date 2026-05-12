@@ -544,9 +544,12 @@ function roundedPath(
 export function createPlayerTextures(scene: Phaser.Scene) {
   const poses: Pose[] = ["run1", "run2", "run3", "run4", "jump", "slide"];
   for (const pose of poses) {
+    const key = `player-${pose}`;
+    if (scene.textures.exists(key)) continue;
+
     commitCanvasAsTexture(
       scene,
-      `player-${pose}`,
+      key,
       (ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
         drawPlayer(ctx, pose);
@@ -555,6 +558,8 @@ export function createPlayerTextures(scene: Phaser.Scene) {
       PH
     );
   }
+
+  if (scene.textures.exists("player-super")) return;
 
   commitCanvasAsTexture(
     scene,

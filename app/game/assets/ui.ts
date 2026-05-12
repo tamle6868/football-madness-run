@@ -347,11 +347,12 @@ export function createUITextures(scene: Phaser.Scene) {
     100
   );
 
-  // Logo banner
-  commitCanvasAsTexture(
-    scene,
-    "logo",
-    (ctx, w, h) => {
+  if (!scene.textures.exists("logo")) {
+    // Logo banner
+    commitCanvasAsTexture(
+      scene,
+      "logo",
+      (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
 
       ctx.save();
@@ -477,10 +478,11 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.closePath();
       ctx.fill();
       ctx.restore();
-    },
-    640,
-    240
-  );
+      },
+      640,
+      240
+    );
+  }
 
   // Magnet aura ring (used during magnet boost)
   commitCanvasAsTexture(
