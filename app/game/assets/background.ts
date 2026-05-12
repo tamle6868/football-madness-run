@@ -5,6 +5,8 @@ const SKY_W = 1280;
 const SKY_H = 360;
 
 export function createSkyTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("bg-sky")) return;
+
   commitCanvasAsTexture(
     scene,
     "bg-sky",
@@ -74,6 +76,8 @@ const STADIUM_W = 1600;
 const STADIUM_H = 360;
 
 export function createStadiumTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("bg-stadium")) return;
+
   commitCanvasAsTexture(
     scene,
     "bg-stadium",
@@ -193,6 +197,8 @@ const GROUND_W = 1280;
 const GROUND_H = 200;
 
 export function createGroundTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("bg-ground")) return;
+
   commitCanvasAsTexture(
     scene,
     "bg-ground",

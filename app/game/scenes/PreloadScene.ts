@@ -61,6 +61,19 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image("player-slide", `/assets/user/player_slide.png?v=${userAssetVersion}`);
     this.load.image("player-super", `/assets/user/player_super.png?v=${userAssetVersion}`);
     this.load.image("logo", `/assets/user/logo_full.png?v=${userAssetVersion}`);
+
+    const iconAssetVersion = "icon-v1";
+    this.load.image("bg-sky", `/assets/user/bg_sky.png?v=${iconAssetVersion}`);
+    this.load.image("bg-stadium", `/assets/user/bg_stadium.png?v=${iconAssetVersion}`);
+    this.load.image("bg-ground", `/assets/user/bg_ground.png?v=${iconAssetVersion}`);
+    this.load.image("obs-var", `/assets/user/obs_var.png?v=${iconAssetVersion}`);
+    this.load.image("obs-corruption", `/assets/user/obs_corruption.png?v=${iconAssetVersion}`);
+    this.load.image("obs-injury", `/assets/user/obs_injury.png?v=${iconAssetVersion}`);
+    this.load.image("obs-hate", `/assets/user/obs_hate.png?v=${iconAssetVersion}`);
+    this.load.image("trophy", `/assets/user/trophy_full.png?v=${iconAssetVersion}`);
+    for (let frame = 0; frame < 6; frame++) {
+      this.load.image(`coin-${frame}`, `/assets/user/coin_${frame}.png?v=${iconAssetVersion}`);
+    }
   }
 
   create() {

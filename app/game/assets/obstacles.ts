@@ -70,6 +70,8 @@ function drawCoinPile(ctx: CanvasRenderingContext2D, cx: number, y: number) {
 }
 
 export function createFifaCorruptionTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("obs-corruption")) return;
+
   const W = 190;
   const H = 230;
   commitCanvasAsTexture(
@@ -200,6 +202,8 @@ export function createFifaCorruptionTexture(scene: Phaser.Scene) {
 }
 
 export function createInjuryCardTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("obs-injury")) return;
+
   const W = 126;
   const H = 214;
   commitCanvasAsTexture(
@@ -321,6 +325,8 @@ export function createInjuryCardTexture(scene: Phaser.Scene) {
 }
 
 export function createSocialMediaHateTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("obs-hate")) return;
+
   const W = 170;
   const H = 166;
   commitCanvasAsTexture(
@@ -439,6 +445,8 @@ export function createSocialMediaHateTexture(scene: Phaser.Scene) {
 }
 
 export function createVarTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("obs-var")) return;
+
   const W = 166;
   const H = 220;
   commitCanvasAsTexture(
@@ -517,6 +525,8 @@ export function createVarTexture(scene: Phaser.Scene) {
 }
 
 export function createDroneTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("obs-drone")) return;
+
   const W = 220;
   const H = 120;
   commitCanvasAsTexture(
@@ -613,6 +623,8 @@ export function createCoinTextures(scene: Phaser.Scene) {
   const H = 72;
   const frames = 6;
   for (let f = 0; f < frames; f++) {
+    if (scene.textures.exists(`coin-${f}`)) continue;
+
     const t = f / frames;
     const sx = Math.max(0.14, Math.abs(Math.cos(t * Math.PI * 2)));
     commitCanvasAsTexture(
@@ -682,6 +694,8 @@ export function createCoinTextures(scene: Phaser.Scene) {
 }
 
 export function createTrophyTexture(scene: Phaser.Scene) {
+  if (scene.textures.exists("trophy")) return;
+
   const W = 210;
   const H = 270;
   commitCanvasAsTexture(
