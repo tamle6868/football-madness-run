@@ -353,45 +353,127 @@ export function createUITextures(scene: Phaser.Scene) {
     "logo",
     (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
-      ctx.font = "900 64px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
 
-      // FOOTBALL
-      const drawText = (text: string, y: number, fillTop: string, fillBot: string) => {
+      ctx.save();
+      ctx.translate(16, 6);
+      ctx.fillStyle = "#07101f";
+      ctx.strokeStyle = "#18c8ff";
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(18, 24);
+      ctx.lineTo(366, 8);
+      ctx.lineTo(402, 52);
+      ctx.lineTo(372, 104);
+      ctx.lineTo(418, 112);
+      ctx.lineTo(360, 218);
+      ctx.lineTo(34, 224);
+      ctx.lineTo(4, 178);
+      ctx.lineTo(23, 122);
+      ctx.lineTo(0, 84);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = "#0b1020";
+      ctx.lineWidth = 12;
+      ctx.stroke();
+      ctx.restore();
+
+      const drawText = (
+        text: string,
+        x: number,
+        y: number,
+        size: number,
+        fillTop: string,
+        fillBot: string,
+        skew = -0.08
+      ) => {
         ctx.save();
-        const grad = ctx.createLinearGradient(0, y - 32, 0, y + 32);
+        ctx.translate(x, y);
+        ctx.transform(1, 0, skew, 1, 0, 0);
+        ctx.font = `900 ${size}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const grad = ctx.createLinearGradient(0, -size * 0.5, 0, size * 0.5);
         grad.addColorStop(0, fillTop);
         grad.addColorStop(1, fillBot);
-        ctx.lineWidth = 8;
+        ctx.lineWidth = Math.max(7, size * 0.13);
         ctx.strokeStyle = "#0b1020";
-        ctx.strokeText(text, w / 2, y);
+        ctx.strokeText(text, 0, 0);
+        ctx.lineWidth = Math.max(3, size * 0.05);
+        ctx.strokeStyle = "#eaf7ff";
+        if (text !== "MADNESS") ctx.strokeText(text, 0, 0);
         ctx.fillStyle = grad;
-        ctx.fillText(text, w / 2, y);
+        ctx.fillText(text, 0, 0);
         ctx.restore();
       };
-      drawText("FOOTBALL", h * 0.28, "#ffffff", "#a0d0ff");
-      drawText("MADNESS", h * 0.6, "#ffe277", "#c87a14");
-      drawText("RUN", h * 0.88, "#ffffff", "#a0d0ff");
 
-      // Flame on the side
+      drawText("FOOTBALL", 198, 58, 56, "#ffffff", "#a9dfff");
+      drawText("MADNESS", 198, 120, 60, "#fff08a", "#ff9a1f", -0.11);
+      drawText("RUN", 180, 182, 58, "#dff4ff", "#36c8ff");
+
       ctx.save();
-      ctx.translate(w * 0.92, h * 0.55);
+      ctx.translate(390, 152);
+      ctx.rotate(-0.16);
+      const flame = ctx.createLinearGradient(-48, -48, 48, 48);
+      flame.addColorStop(0, "#18c8ff");
+      flame.addColorStop(0.5, "#1d56c2");
+      flame.addColorStop(1, "#07101f");
+      ctx.fillStyle = flame;
+      ctx.beginPath();
+      ctx.moveTo(-74, -24);
+      ctx.lineTo(-24, -48);
+      ctx.lineTo(-42, -15);
+      ctx.lineTo(14, -34);
+      ctx.lineTo(-8, -4);
+      ctx.lineTo(58, 0);
+      ctx.lineTo(4, 15);
+      ctx.lineTo(36, 42);
+      ctx.lineTo(-18, 28);
+      ctx.lineTo(-58, 52);
+      ctx.lineTo(-38, 18);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.strokeStyle = "#07101f";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(32, 4, 36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#07101f";
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI * 2 * i) / 6 - Math.PI / 6;
+        ctx.beginPath();
+        ctx.moveTo(32, 4);
+        ctx.lineTo(32 + Math.cos(a) * 30, 4 + Math.sin(a) * 30);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI * 2 * i) / 6 - Math.PI / 6;
+        const x = 32 + Math.cos(a) * 13;
+        const y = 4 + Math.sin(a) * 13;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+
       ctx.fillStyle = "#ff9a3c";
       ctx.beginPath();
-      ctx.moveTo(0, -40);
-      ctx.quadraticCurveTo(-26, -10, -16, 14);
-      ctx.quadraticCurveTo(-8, 8, -4, 22);
-      ctx.quadraticCurveTo(8, -4, 16, 12);
-      ctx.quadraticCurveTo(26, -8, 0, -40);
+      ctx.moveTo(58, -45);
+      ctx.quadraticCurveTo(30, -15, 42, 12);
+      ctx.quadraticCurveTo(50, 5, 52, 22);
+      ctx.quadraticCurveTo(72, -4, 58, -45);
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = "#ffd23a";
       ctx.beginPath();
-      ctx.moveTo(0, -22);
-      ctx.quadraticCurveTo(-12, 4, -4, 16);
-      ctx.quadraticCurveTo(2, 8, 6, 14);
-      ctx.quadraticCurveTo(12, -2, 0, -22);
+      ctx.moveTo(59, -22);
+      ctx.quadraticCurveTo(47, 3, 55, 16);
+      ctx.quadraticCurveTo(65, 1, 59, -22);
       ctx.closePath();
       ctx.fill();
       ctx.restore();

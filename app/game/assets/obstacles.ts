@@ -22,271 +22,6 @@ function rounded(
   ctx.closePath();
 }
 
-/**
- * FIFA Corruption: tan money bag with $ symbol + small parody figure.
- * Tall obstacle, jump over.
- */
-export function createFifaCorruptionTexture(scene: Phaser.Scene) {
-  const W = 180;
-  const H = 220;
-  commitCanvasAsTexture(
-    scene,
-    "obs-corruption",
-    (ctx, w, h) => {
-      ctx.clearRect(0, 0, w, h);
-
-      // Money bag base shadow
-      ctx.fillStyle = "rgba(0,0,0,0.4)";
-      ctx.beginPath();
-      ctx.ellipse(w / 2, h - 8, 70, 10, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Money bag body (rounded sack)
-      const bagGrad = ctx.createLinearGradient(0, 60, 0, h);
-      bagGrad.addColorStop(0, "#d8a35a");
-      bagGrad.addColorStop(0.5, "#b07d34");
-      bagGrad.addColorStop(1, "#5a3a14");
-      ctx.fillStyle = bagGrad;
-      ctx.beginPath();
-      ctx.moveTo(20, 90);
-      ctx.quadraticCurveTo(0, 200, 30, h - 14);
-      ctx.lineTo(w - 30, h - 14);
-      ctx.quadraticCurveTo(w, 200, w - 20, 90);
-      ctx.closePath();
-      ctx.fill();
-
-      // Outline
-      ctx.strokeStyle = "rgba(0,0,0,0.6)";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Bag tied top
-      ctx.fillStyle = "#7a5520";
-      rounded(ctx, 30, 70, w - 60, 30, 8);
-      ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.6)";
-      ctx.stroke();
-
-      // String/cinch
-      ctx.strokeStyle = "#3a2a14";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(40, 86);
-      ctx.lineTo(w - 40, 86);
-      ctx.stroke();
-
-      // Folds at top
-      ctx.fillStyle = "#7a5520";
-      ctx.beginPath();
-      ctx.moveTo(40, 70);
-      ctx.lineTo(60, 50);
-      ctx.lineTo(70, 70);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(w - 70, 70);
-      ctx.lineTo(w - 60, 50);
-      ctx.lineTo(w - 40, 70);
-      ctx.closePath();
-      ctx.fill();
-
-      // $ symbol
-      ctx.fillStyle = "#1a1208";
-      ctx.font = "900 86px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("$", w / 2, h / 2 + 18);
-
-      // Label "FIFA CORRUPTION"
-      ctx.fillStyle = "#fff8e0";
-      ctx.font = "bold 13px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("FOOFA", w / 2, h - 38);
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText("CORRUPTION", w / 2, h - 22);
-
-      // Small crooked official figure on top.
-      ctx.save();
-      ctx.translate(w / 2, 30);
-      // Suit body
-      ctx.fillStyle = "#18233f";
-      ctx.beginPath();
-      ctx.moveTo(-22, 30);
-      ctx.lineTo(-26, 0);
-      ctx.lineTo(26, 0);
-      ctx.lineTo(22, 30);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.5)";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      // Shirt and tie
-      ctx.fillStyle = "#f8f2dc";
-      ctx.beginPath();
-      ctx.moveTo(-8, 0);
-      ctx.lineTo(0, 13);
-      ctx.lineTo(8, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#ff3845";
-      ctx.beginPath();
-      ctx.moveTo(0, 4);
-      ctx.lineTo(5, 20);
-      ctx.lineTo(0, 28);
-      ctx.lineTo(-5, 20);
-      ctx.closePath();
-      ctx.fill();
-      // Head
-      ctx.fillStyle = "#e6c4a0";
-      ctx.beginPath();
-      ctx.ellipse(0, -10, 12, 13, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      // Hair
-      ctx.fillStyle = "#1a1208";
-      ctx.beginPath();
-      ctx.moveTo(-13, -15);
-      ctx.quadraticCurveTo(0, -28, 13, -15);
-      ctx.lineTo(13, -8);
-      ctx.quadraticCurveTo(0, -12, -13, -8);
-      ctx.closePath();
-      ctx.fill();
-      // Eyes
-      ctx.fillStyle = "#0b1020";
-      ctx.beginPath();
-      ctx.arc(-4, -10, 1.6, 0, Math.PI * 2);
-      ctx.arc(4, -10, 1.6, 0, Math.PI * 2);
-      ctx.fill();
-      // Cash note
-      ctx.fillStyle = "#32d264";
-      rounded(ctx, 13, 4, 22, 12, 2);
-      ctx.fill();
-      ctx.fillStyle = "#0b1020";
-      ctx.font = "900 9px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("$", 24, 10);
-      ctx.restore();
-
-      // Red alert bubble
-      ctx.fillStyle = "#ffffff";
-      ctx.strokeStyle = "rgba(0,0,0,0.6)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(w - 22, 16, 14, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#ff3845";
-      ctx.beginPath();
-      ctx.arc(w - 22, 16, 9, 0, Math.PI * 2);
-      ctx.fill();
-      // Angry face
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(w - 27, 14);
-      ctx.lineTo(w - 23, 12);
-      ctx.moveTo(w - 21, 12);
-      ctx.lineTo(w - 17, 14);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(w - 22, 20, 2.2, Math.PI, 0);
-      ctx.stroke();
-    },
-    W,
-    H
-  );
-}
-
-/**
- * Injury Card — blue FIFA-style player card with cross. Tall obstacle, jump.
- */
-export function createInjuryCardTexture(scene: Phaser.Scene) {
-  const W = 110;
-  const H = 200;
-  commitCanvasAsTexture(
-    scene,
-    "obs-injury",
-    (ctx, w, h) => {
-      ctx.clearRect(0, 0, w, h);
-      // Drop shadow
-      ctx.fillStyle = "rgba(0,0,0,0.4)";
-      ctx.beginPath();
-      ctx.ellipse(w / 2, h - 4, 50, 8, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Card frame
-      const grad = ctx.createLinearGradient(0, 0, w, h);
-      grad.addColorStop(0, "#3b7eea");
-      grad.addColorStop(0.55, "#1a4ab8");
-      grad.addColorStop(1, "#0a2466");
-      ctx.fillStyle = grad;
-      rounded(ctx, 4, 6, w - 8, h - 14, 10);
-      ctx.fill();
-      ctx.strokeStyle = "#0a2466";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Inner border
-      ctx.strokeStyle = "rgba(255,255,255,0.5)";
-      ctx.lineWidth = 1.5;
-      rounded(ctx, 8, 10, w - 16, h - 22, 8);
-      ctx.stroke();
-
-      // Rating "99"
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "900 26px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("99", 28, 36);
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText("INJ", 28, 54);
-
-      // Player figure (silhouette in pain — leg up, hands on head)
-      ctx.save();
-      ctx.translate(w / 2 + 8, 80);
-      ctx.fillStyle = "#0a2466";
-      // Head
-      ctx.beginPath();
-      ctx.arc(0, -28, 12, 0, Math.PI * 2);
-      ctx.fill();
-      // Body
-      rounded(ctx, -14, -16, 28, 36, 6);
-      ctx.fill();
-      // Hands on head
-      ctx.beginPath();
-      ctx.arc(-12, -38, 5, 0, Math.PI * 2);
-      ctx.arc(12, -38, 5, 0, Math.PI * 2);
-      ctx.fill();
-      // Arms up to head
-      ctx.fillRect(-14, -36, 4, 24);
-      ctx.fillRect(10, -36, 4, 24);
-      // Leg held up (other one bent)
-      rounded(ctx, -8, 18, 8, 24, 3);
-      ctx.fill();
-      rounded(ctx, 6, 14, 24, 8, 3);
-      ctx.fill();
-      ctx.restore();
-
-      // Pain stars
-      ctx.fillStyle = "#ffd23a";
-      drawStar(ctx, 22, 80, 5, 6, 3);
-      drawStar(ctx, w - 22, 92, 5, 6, 3);
-      drawStar(ctx, w - 22, 60, 4, 4, 2);
-
-      // Medical cross at bottom
-      ctx.fillStyle = "#ffffff";
-      rounded(ctx, w / 2 - 14, h - 50, 28, 28, 4);
-      ctx.fill();
-      ctx.fillStyle = "#ff3845";
-      ctx.fillRect(w / 2 - 3, h - 46, 6, 20);
-      ctx.fillRect(w / 2 - 11, h - 38, 22, 6);
-    },
-    W,
-    H
-  );
-}
-
 function drawStar(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -295,230 +30,492 @@ function drawStar(
   outer: number,
   inner: number
 ) {
-  let rot = (Math.PI / 2) * 3;
+  let rot = Math.PI * 1.5;
   const step = Math.PI / spikes;
   ctx.beginPath();
   ctx.moveTo(cx, cy - outer);
   for (let i = 0; i < spikes; i++) {
-    let x = cx + Math.cos(rot) * outer;
-    let y = cy + Math.sin(rot) * outer;
-    ctx.lineTo(x, y);
+    ctx.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer);
     rot += step;
-    x = cx + Math.cos(rot) * inner;
-    y = cy + Math.sin(rot) * inner;
-    ctx.lineTo(x, y);
+    ctx.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner);
     rot += step;
   }
-  ctx.lineTo(cx, cy - outer);
   ctx.closePath();
   ctx.fill();
 }
 
-/**
- * Social Media Hate - brown mud pile with warning bubbles.
- * Low obstacle: slide under (taller version); short version: jump.
- */
-export function createSocialMediaHateTexture(scene: Phaser.Scene) {
-  const W = 160;
-  const H = 160;
+function drawCoinPile(ctx: CanvasRenderingContext2D, cx: number, y: number) {
+  const rows = [
+    { count: 7, y: 0, r: 8 },
+    { count: 5, y: -9, r: 8 },
+    { count: 3, y: -18, r: 8 },
+  ];
+  for (const row of rows) {
+    const start = cx - ((row.count - 1) * row.r * 1.12) / 2;
+    for (let i = 0; i < row.count; i++) {
+      const x = start + i * row.r * 1.12;
+      const g = ctx.createRadialGradient(x - 2, y + row.y - 3, 1, x, y + row.y, row.r);
+      g.addColorStop(0, "#fff7a8");
+      g.addColorStop(0.55, "#ffc83a");
+      g.addColorStop(1, "#8a4f08");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(x, y + row.y, row.r, row.r * 0.72, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#3a2306";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+}
+
+export function createFifaCorruptionTexture(scene: Phaser.Scene) {
+  const W = 190;
+  const H = 230;
   commitCanvasAsTexture(
     scene,
-    "obs-hate",
+    "obs-corruption",
     (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "rgba(0,0,0,0.4)";
+
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
       ctx.beginPath();
-      ctx.ellipse(w / 2, h - 6, 60, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(w / 2, h - 10, 74, 12, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Poop swirl (3 stacked tiers)
-      const tiers = [
-        { y: h - 20, rx: 64, ry: 18, top: "#9a5a26", bot: "#5a2e0e" },
-        { y: h - 54, rx: 50, ry: 16, top: "#8a4a1e", bot: "#4a240a" },
-        { y: h - 86, rx: 36, ry: 14, top: "#7a4018", bot: "#3a1c08" },
-      ];
-      for (const t of tiers) {
-        const grad = ctx.createLinearGradient(0, t.y - t.ry, 0, t.y + t.ry);
-        grad.addColorStop(0, t.top);
-        grad.addColorStop(1, t.bot);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.ellipse(w / 2, t.y, t.rx, t.ry, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "rgba(0,0,0,0.6)";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
+      drawCoinPile(ctx, w / 2, h - 15);
 
-      // Highlight on each tier
+      const bag = ctx.createLinearGradient(0, 52, 0, h);
+      bag.addColorStop(0, "#f1c06b");
+      bag.addColorStop(0.42, "#bd7f2a");
+      bag.addColorStop(1, "#5d3510");
+      ctx.fillStyle = bag;
+      ctx.strokeStyle = "#211304";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(45, 87);
+      ctx.quadraticCurveTo(18, 118, 17, 177);
+      ctx.quadraticCurveTo(34, h - 25, w / 2, h - 27);
+      ctx.quadraticCurveTo(w - 34, h - 25, w - 17, 177);
+      ctx.quadraticCurveTo(w - 18, 118, w - 45, 87);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
       ctx.fillStyle = "rgba(255,255,255,0.18)";
-      for (const t of tiers) {
-        ctx.beginPath();
-        ctx.ellipse(w / 2 - 6, t.y - 4, t.rx * 0.6, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Tip of poop
-      ctx.fillStyle = "#3a1c08";
       ctx.beginPath();
-      ctx.moveTo(w / 2, h - 100);
-      ctx.lineTo(w / 2 - 6, h - 88);
-      ctx.lineTo(w / 2 + 6, h - 88);
+      ctx.ellipse(68, 130, 16, 50, -0.18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#72501d";
+      ctx.strokeStyle = "#211304";
+      ctx.lineWidth = 4;
+      rounded(ctx, 43, 68, w - 86, 28, 9);
+      ctx.fill();
+      ctx.stroke();
+      ctx.strokeStyle = "#211304";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(48, 82);
+      ctx.lineTo(w - 48, 82);
+      ctx.stroke();
+
+      ctx.fillStyle = "#7d5520";
+      ctx.beginPath();
+      ctx.moveTo(56, 70);
+      ctx.lineTo(72, 46);
+      ctx.lineTo(83, 70);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(w - 83, 70);
+      ctx.lineTo(w - 72, 46);
+      ctx.lineTo(w - 56, 70);
       ctx.closePath();
       ctx.fill();
 
-      // Angry face
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.ellipse(w / 2 - 14, h - 56, 5, 6, 0, 0, Math.PI * 2);
-      ctx.ellipse(w / 2 + 14, h - 56, 5, 6, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#0b1020";
-      ctx.beginPath();
-      ctx.arc(w / 2 - 14, h - 55, 2.2, 0, Math.PI * 2);
-      ctx.arc(w / 2 + 14, h - 55, 2.2, 0, Math.PI * 2);
-      ctx.fill();
-      // Frown
-      ctx.strokeStyle = "#1a0c08";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(w / 2, h - 38, 8, Math.PI * 1.1, Math.PI * 1.9);
-      ctx.stroke();
-
-      // Hate-comment bubble
-      ctx.fillStyle = "#ffffff";
-      ctx.strokeStyle = "rgba(0,0,0,0.6)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(28, 28, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(36, 40);
-      ctx.lineTo(30, 40);
-      ctx.lineTo(27, 49);
-      ctx.lineTo(21, 49);
-      ctx.lineTo(22, 38);
-      ctx.lineTo(15, 38);
-      ctx.lineTo(15, 22);
-      ctx.lineTo(34, 22);
-      ctx.lineTo(39, 27);
-      ctx.lineTo(39, 36);
-      ctx.closePath();
-      ctx.fillStyle = "#ff3845";
-      ctx.fill();
-      ctx.strokeStyle = "#0b1020";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      // Thumbs down
-      ctx.fillStyle = "#ff3845";
+      ctx.fillStyle = "#4d2d0b";
+      ctx.font = "900 58px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("$", w / 2, 126);
+      ctx.font = "900 22px sans-serif";
+      ctx.fillText("FOOFA", w / 2, 164);
       ctx.font = "900 18px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.globalAlpha = 1;
-      // Second warning bubble.
-      ctx.fillStyle = "#ffffff";
+      ctx.fillText("CONTRACT", w / 2, 187);
+
+      ctx.save();
+      ctx.translate(w / 2 + 22, 35);
+      ctx.fillStyle = "#0c1432";
+      rounded(ctx, -18, -4, 36, 38, 8);
+      ctx.fill();
+      ctx.strokeStyle = "#050811";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.fillStyle = "#f0c49e";
       ctx.beginPath();
-      ctx.arc(w - 28, 18, 16, 0, Math.PI * 2);
+      ctx.ellipse(0, -13, 13, 14, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "#ffd23a";
+      ctx.fillStyle = "#221104";
       ctx.beginPath();
-      ctx.moveTo(w - 28, 4);
-      ctx.lineTo(w - 42, 28);
-      ctx.lineTo(w - 14, 28);
+      ctx.moveTo(-13, -19);
+      ctx.quadraticCurveTo(0, -31, 13, -19);
+      ctx.quadraticCurveTo(10, -8, -10, -8);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = "#0b1020";
-      ctx.lineWidth = 1.5;
+      ctx.fillStyle = "#32d264";
+      rounded(ctx, -34, 7, 26, 14, 3);
+      ctx.fill();
+      ctx.fillStyle = "#083515";
+      ctx.font = "900 10px sans-serif";
+      ctx.fillText("$", -21, 17);
+      ctx.restore();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.strokeStyle = "#07101f";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(w - 25, 24, 18, 0, Math.PI * 2);
+      ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = "#0b1020";
-      ctx.font = "900 17px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("!", w - 28, 22);
-      ctx.fillStyle = "#6b3a14";
-      ctx.font = "900 16px sans-serif";
+      ctx.fillStyle = "#ff3845";
+      ctx.beginPath();
+      ctx.arc(w - 25, 24, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(w - 31, 22);
+      ctx.lineTo(w - 26, 19);
+      ctx.moveTo(w - 24, 19);
+      ctx.lineTo(w - 19, 22);
+      ctx.moveTo(w - 30, 29);
+      ctx.quadraticCurveTo(w - 25, 26, w - 20, 29);
+      ctx.stroke();
     },
     W,
     H
   );
 }
 
-/**
- * VAR barrier — TV screen on stand showing red "VAR".
- * Tall obstacle (jump).
- */
+export function createInjuryCardTexture(scene: Phaser.Scene) {
+  const W = 126;
+  const H = 214;
+  commitCanvasAsTexture(
+    scene,
+    "obs-injury",
+    (ctx, w, h) => {
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      ctx.beginPath();
+      ctx.ellipse(w / 2, h - 7, 50, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const frame = ctx.createLinearGradient(0, 0, w, h);
+      frame.addColorStop(0, "#5fa6ff");
+      frame.addColorStop(0.5, "#1649c9");
+      frame.addColorStop(1, "#081b5c");
+      ctx.fillStyle = frame;
+      ctx.strokeStyle = "#04102e";
+      ctx.lineWidth = 5;
+      rounded(ctx, 8, 8, w - 16, h - 18, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(255,255,255,0.55)";
+      ctx.lineWidth = 2;
+      rounded(ctx, 14, 15, w - 28, h - 32, 9);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 30px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("99", 35, 38);
+      ctx.font = "900 13px sans-serif";
+      ctx.fillText("INJURY", 37, 60);
+
+      ctx.save();
+      ctx.translate(w / 2 + 8, 108);
+      ctx.fillStyle = "#f0b78f";
+      ctx.strokeStyle = "#061126";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.ellipse(0, -45, 15, 17, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#1f1208";
+      ctx.beginPath();
+      ctx.moveTo(-15, -51);
+      ctx.quadraticCurveTo(0, -66, 16, -51);
+      ctx.lineTo(13, -42);
+      ctx.quadraticCurveTo(1, -48, -14, -42);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#ffd23a";
+      rounded(ctx, -17, -30, 34, 46, 7);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#1644a8";
+      ctx.font = "900 15px sans-serif";
+      ctx.fillText("7", 1, -8);
+
+      ctx.strokeStyle = "#061126";
+      ctx.lineWidth = 6;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-15, -24);
+      ctx.lineTo(-29, -8);
+      ctx.moveTo(15, -24);
+      ctx.lineTo(29, -6);
+      ctx.moveTo(-8, 16);
+      ctx.lineTo(-18, 42);
+      ctx.moveTo(8, 16);
+      ctx.lineTo(28, 32);
+      ctx.stroke();
+      ctx.strokeStyle = "#ffd23a";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-15, -24);
+      ctx.lineTo(-29, -8);
+      ctx.moveTo(15, -24);
+      ctx.lineTo(29, -6);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.ellipse(-6, -42, 3, 4, 0, 0, Math.PI * 2);
+      ctx.ellipse(6, -42, 3, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#07101f";
+      ctx.beginPath();
+      ctx.arc(-6, -41, 1.5, 0, Math.PI * 2);
+      ctx.arc(6, -41, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#3a0a14";
+      ctx.beginPath();
+      ctx.ellipse(1, -32, 5, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = "#ffd23a";
+      drawStar(ctx, 27, 86, 5, 7, 3);
+      drawStar(ctx, w - 23, 88, 5, 6, 3);
+
+      ctx.fillStyle = "#ffffff";
+      rounded(ctx, w / 2 - 18, h - 48, 36, 32, 5);
+      ctx.fill();
+      ctx.strokeStyle = "#061126";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = "#ff3845";
+      ctx.fillRect(w / 2 - 4, h - 43, 8, 22);
+      ctx.fillRect(w / 2 - 13, h - 34, 26, 7);
+    },
+    W,
+    H
+  );
+}
+
+export function createSocialMediaHateTexture(scene: Phaser.Scene) {
+  const W = 170;
+  const H = 166;
+  commitCanvasAsTexture(
+    scene,
+    "obs-hate",
+    (ctx, w, h) => {
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      ctx.beginPath();
+      ctx.ellipse(w / 2, h - 8, 63, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const tiers = [
+        { y: h - 27, rx: 63, ry: 18, top: "#ad6727", bot: "#4a240a" },
+        { y: h - 60, rx: 51, ry: 17, top: "#8c4d1c", bot: "#3b1a06" },
+        { y: h - 91, rx: 36, ry: 15, top: "#723813", bot: "#261003" },
+      ];
+      for (const tier of tiers) {
+        const g = ctx.createLinearGradient(0, tier.y - tier.ry, 0, tier.y + tier.ry);
+        g.addColorStop(0, tier.top);
+        g.addColorStop(1, tier.bot);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.ellipse(w / 2, tier.y, tier.rx, tier.ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#1d0d03";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,0.16)";
+        ctx.beginPath();
+        ctx.ellipse(w / 2 - 8, tier.y - 5, tier.rx * 0.5, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#2a1204";
+      ctx.beginPath();
+      ctx.moveTo(w / 2, h - 108);
+      ctx.lineTo(w / 2 - 10, h - 90);
+      ctx.lineTo(w / 2 + 10, h - 90);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.ellipse(w / 2 - 14, h - 62, 5, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(w / 2 + 14, h - 62, 5, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#07101f";
+      ctx.beginPath();
+      ctx.arc(w / 2 - 14, h - 61, 2, 0, Math.PI * 2);
+      ctx.arc(w / 2 + 14, h - 61, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#170903";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(w / 2, h - 44, 9, Math.PI * 1.12, Math.PI * 1.88);
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff8e0";
+      ctx.strokeStyle = "#07101f";
+      ctx.lineWidth = 3;
+      rounded(ctx, 39, h - 50, 92, 34, 8);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#4a240a";
+      ctx.font = "900 15px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("SOCIAL", w / 2, h - 38);
+      ctx.fillText("HATE", w / 2, h - 22);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(30, 29, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#ff3845";
+      ctx.beginPath();
+      ctx.moveTo(38, 41);
+      ctx.lineTo(31, 41);
+      ctx.lineTo(27, 49);
+      ctx.lineTo(21, 49);
+      ctx.lineTo(22, 38);
+      ctx.lineTo(15, 38);
+      ctx.lineTo(15, 23);
+      ctx.lineTo(35, 23);
+      ctx.lineTo(40, 28);
+      ctx.lineTo(40, 37);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#07101f";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(w - 30, 23, 17, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#ffd23a";
+      ctx.beginPath();
+      ctx.moveTo(w - 30, 7);
+      ctx.lineTo(w - 45, 32);
+      ctx.lineTo(w - 15, 32);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#07101f";
+      ctx.font = "900 17px sans-serif";
+      ctx.fillText("!", w - 30, 25);
+    },
+    W,
+    H
+  );
+}
+
 export function createVarTexture(scene: Phaser.Scene) {
-  const W = 150;
+  const W = 166;
   const H = 220;
   commitCanvasAsTexture(
     scene,
     "obs-var",
     (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
-      // Stand
-      ctx.fillStyle = "#1a1c24";
-      ctx.fillRect(w / 2 - 4, 130, 8, 70);
-      ctx.fillStyle = "#0a0c14";
-      rounded(ctx, w / 2 - 30, h - 14, 60, 10, 4);
+
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      ctx.beginPath();
+      ctx.ellipse(w / 2, h - 8, 58, 9, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#0a0c14";
-      ctx.lineWidth = 2;
+
+      ctx.fillStyle = "#111827";
+      ctx.fillRect(w / 2 - 5, 129, 10, 70);
+      ctx.fillStyle = "#060913";
+      rounded(ctx, w / 2 - 34, h - 18, 68, 12, 5);
+      ctx.fill();
+
+      ctx.fillStyle = "#050811";
+      ctx.strokeStyle = "#3c465d";
+      ctx.lineWidth = 5;
+      rounded(ctx, 9, 16, w - 18, 125, 12);
+      ctx.fill();
       ctx.stroke();
 
-      // Screen frame
-      ctx.fillStyle = "#0a0c14";
-      rounded(ctx, 6, 6, w - 12, 130, 10);
-      ctx.fill();
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Screen inner (CRT glow)
-      const sg = ctx.createLinearGradient(0, 0, 0, 130);
-      sg.addColorStop(0, "#10131c");
-      sg.addColorStop(1, "#1c2030");
-      ctx.fillStyle = sg;
-      rounded(ctx, 14, 14, w - 28, 114, 6);
+      const screen = ctx.createLinearGradient(0, 26, 0, 130);
+      screen.addColorStop(0, "#1a2235");
+      screen.addColorStop(0.52, "#0a0d14");
+      screen.addColorStop(1, "#20283a");
+      ctx.fillStyle = screen;
+      rounded(ctx, 20, 28, w - 40, 94, 6);
       ctx.fill();
 
-      // VAR text glowing red
-      ctx.shadowColor = "#ff2a2a";
-      ctx.shadowBlur = 18;
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      for (let y = 31; y < 120; y += 5) {
+        ctx.fillRect(22, y, w - 44, 1);
+      }
+
+      ctx.shadowColor = "#ff3845";
+      ctx.shadowBlur = 16;
       ctx.fillStyle = "#ff3845";
-      ctx.font = "900 56px sans-serif";
+      ctx.font = "900 48px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("VAR", w / 2, 74);
       ctx.shadowBlur = 0;
 
-      // Scanlines
-      ctx.fillStyle = "rgba(255,255,255,0.05)";
-      for (let y = 14; y < 128; y += 4) {
-        ctx.fillRect(14, y, w - 28, 1);
-      }
-
-      // Red recording dot
-      ctx.fillStyle = "#ff3845";
-      ctx.beginPath();
-      ctx.arc(w - 28, 24, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#42dfff";
+      rounded(ctx, 30, 91, 31, 22, 4);
+      ctx.fill();
+      ctx.fillStyle = "#07101f";
+      rounded(ctx, 35, 96, 21, 12, 2);
       ctx.fill();
 
-      // Brand label under screen
+      ctx.fillStyle = "#f0b78f";
+      ctx.beginPath();
+      ctx.ellipse(w - 44, 102, 10, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#1a1208";
+      ctx.beginPath();
+      ctx.arc(w - 44, 97, 10, Math.PI, 0);
+      ctx.fill();
+
+      ctx.fillStyle = "#ff3845";
+      ctx.beginPath();
+      ctx.arc(w - 30, 27, 4, 0, Math.PI * 2);
+      ctx.fill();
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText("REVIEW", w / 2, 122);
+      ctx.font = "900 10px sans-serif";
+      ctx.fillText("REVIEW", w / 2, 132);
     },
     W,
     H
   );
 }
 
-/**
- * Drone — flying slide-only obstacle. It sits above head height so a normal
- * run/jump into its body is dangerous, while a slide passes beneath.
- */
 export function createDroneTexture(scene: Phaser.Scene) {
   const W = 220;
   const H = 120;
@@ -528,86 +525,75 @@ export function createDroneTexture(scene: Phaser.Scene) {
     (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
 
-      // Rotor blur discs
-      const rotorY = 32;
-      const rotorXs = [46, w - 46];
-      for (const x of rotorXs) {
-        const blur = ctx.createRadialGradient(x, rotorY, 4, x, rotorY, 42);
-        blur.addColorStop(0, "rgba(255,255,255,0.65)");
-        blur.addColorStop(0.45, "rgba(160,210,255,0.22)");
-        blur.addColorStop(1, "rgba(160,210,255,0)");
+      const rotorY = 31;
+      for (const x of [46, w - 46]) {
+        const blur = ctx.createRadialGradient(x, rotorY, 4, x, rotorY, 45);
+        blur.addColorStop(0, "rgba(255,255,255,0.7)");
+        blur.addColorStop(0.45, "rgba(110,210,255,0.26)");
+        blur.addColorStop(1, "rgba(110,210,255,0)");
         ctx.fillStyle = blur;
         ctx.beginPath();
-        ctx.ellipse(x, rotorY, 42, 14, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, rotorY, 45, 15, 0, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.strokeStyle = "rgba(255,255,255,0.85)";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(x - 34, rotorY);
-        ctx.lineTo(x + 34, rotorY);
-        ctx.moveTo(x, rotorY - 10);
-        ctx.lineTo(x, rotorY + 10);
+        ctx.moveTo(x - 36, rotorY);
+        ctx.lineTo(x + 36, rotorY);
+        ctx.moveTo(x, rotorY - 11);
+        ctx.lineTo(x, rotorY + 11);
         ctx.stroke();
       }
 
-      // Arms
-      ctx.strokeStyle = "#0b1020";
-      ctx.lineWidth = 10;
+      ctx.strokeStyle = "#07101f";
+      ctx.lineWidth = 11;
       ctx.lineCap = "round";
       ctx.beginPath();
-      ctx.moveTo(60, 58);
-      ctx.lineTo(w / 2 - 34, 66);
-      ctx.moveTo(w - 60, 58);
-      ctx.lineTo(w / 2 + 34, 66);
+      ctx.moveTo(59, 58);
+      ctx.lineTo(w / 2 - 37, 67);
+      ctx.moveTo(w - 59, 58);
+      ctx.lineTo(w / 2 + 37, 67);
       ctx.stroke();
-      ctx.strokeStyle = "#5d7db8";
+      ctx.strokeStyle = "#6d8fe0";
       ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.moveTo(62, 58);
-      ctx.lineTo(w / 2 - 34, 66);
-      ctx.moveTo(w - 62, 58);
-      ctx.lineTo(w / 2 + 34, 66);
+      ctx.moveTo(61, 58);
+      ctx.lineTo(w / 2 - 37, 67);
+      ctx.moveTo(w - 61, 58);
+      ctx.lineTo(w / 2 + 37, 67);
       ctx.stroke();
 
-      // Body shell
-      const bodyGrad = ctx.createLinearGradient(0, 40, 0, h);
-      bodyGrad.addColorStop(0, "#a0d0ff");
-      bodyGrad.addColorStop(0.4, "#365ea8");
-      bodyGrad.addColorStop(1, "#10224e");
-      ctx.fillStyle = bodyGrad;
-      rounded(ctx, w / 2 - 48, 42, 96, 50, 14);
+      const body = ctx.createLinearGradient(0, 40, 0, h);
+      body.addColorStop(0, "#d5eeff");
+      body.addColorStop(0.4, "#3e6ce0");
+      body.addColorStop(1, "#10204b");
+      ctx.fillStyle = body;
+      ctx.strokeStyle = "#07101f";
+      ctx.lineWidth = 5;
+      rounded(ctx, w / 2 - 50, 42, 100, 52, 15);
       ctx.fill();
-      ctx.strokeStyle = "#061126";
-      ctx.lineWidth = 4;
       ctx.stroke();
 
-      // Camera lens
-      ctx.fillStyle = "#07101f";
+      ctx.fillStyle = "#061126";
       ctx.beginPath();
-      ctx.arc(w / 2, 70, 18, 0, Math.PI * 2);
+      ctx.arc(w / 2, 70, 19, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = "#3cf2ff";
+      ctx.fillStyle = "#42dfff";
       ctx.beginPath();
-      ctx.arc(w / 2, 70, 9, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "rgba(255,255,255,0.8)";
-      ctx.beginPath();
-      ctx.arc(w / 2 - 4, 66, 3, 0, Math.PI * 2);
+      ctx.arc(w / 2, 70, 10, 0, Math.PI * 2);
       ctx.fill();
 
-      // Warning stripe
       ctx.fillStyle = "#ffd23a";
-      rounded(ctx, w / 2 - 32, 88, 64, 9, 4);
+      rounded(ctx, w / 2 - 35, 88, 70, 10, 4);
       ctx.fill();
-      ctx.fillStyle = "#0b1020";
+      ctx.fillStyle = "#07101f";
       ctx.font = "900 10px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("LOW BRIDGE", w / 2, 93);
+      ctx.fillText("SLIDE", w / 2, 93);
 
-      // Red warning LEDs
-      for (const x of [w / 2 - 58, w / 2 + 58]) {
+      for (const x of [w / 2 - 60, w / 2 + 60]) {
         ctx.fillStyle = "#ff3845";
         ctx.shadowColor = "#ff3845";
         ctx.shadowBlur = 8;
@@ -616,35 +602,19 @@ export function createDroneTexture(scene: Phaser.Scene) {
         ctx.fill();
         ctx.shadowBlur = 0;
       }
-
-      // Small down arrows to visually teach slide.
-      ctx.fillStyle = "#ffffff";
-      ctx.globalAlpha = 0.86;
-      for (const x of [w / 2 - 80, w / 2 + 80]) {
-        ctx.beginPath();
-        ctx.moveTo(x - 8, 98);
-        ctx.lineTo(x + 8, 98);
-        ctx.lineTo(x, 110);
-        ctx.closePath();
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
     },
     W,
     H
   );
 }
 
-/**
- * Coin — gold disc with football pattern. We render 6 frames for spin.
- */
 export function createCoinTextures(scene: Phaser.Scene) {
-  const W = 64;
-  const H = 64;
+  const W = 72;
+  const H = 72;
   const frames = 6;
   for (let f = 0; f < frames; f++) {
     const t = f / frames;
-    const sx = Math.abs(Math.cos(t * Math.PI * 2));
+    const sx = Math.max(0.14, Math.abs(Math.cos(t * Math.PI * 2)));
     commitCanvasAsTexture(
       scene,
       `coin-${f}`,
@@ -652,61 +622,57 @@ export function createCoinTextures(scene: Phaser.Scene) {
         ctx.clearRect(0, 0, w, h);
         const cx = w / 2;
         const cy = h / 2;
-        const rx = (w / 2 - 4) * Math.max(0.15, sx);
-        const ry = h / 2 - 4;
+        const rx = (w / 2 - 5) * sx;
+        const ry = h / 2 - 6;
 
-        const grad = ctx.createRadialGradient(cx - rx * 0.3, cy - ry * 0.3, 4, cx, cy, ry);
-        grad.addColorStop(0, "#fff5b8");
-        grad.addColorStop(0.5, "#ffc83a");
-        grad.addColorStop(1, "#8a5a0a");
-        ctx.fillStyle = grad;
+        ctx.shadowColor = "rgba(255,210,58,0.9)";
+        ctx.shadowBlur = 10;
+        const g = ctx.createRadialGradient(cx - rx * 0.35, cy - ry * 0.35, 4, cx, cy, ry);
+        g.addColorStop(0, "#fff7a8");
+        g.addColorStop(0.45, "#ffc83a");
+        g.addColorStop(0.78, "#d48713");
+        g.addColorStop(1, "#6f4208");
+        ctx.fillStyle = g;
         ctx.beginPath();
         ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = "#5a3a08";
+        ctx.shadowBlur = 0;
+
+        ctx.strokeStyle = "#4a2b05";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.strokeStyle = "#fff1a3";
         ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, Math.max(2, rx - 7), ry - 7, 0, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Football pattern (only when face is visible enough)
-        if (sx > 0.5) {
-          ctx.fillStyle = "#3a1f04";
-          ctx.beginPath();
-          ctx.arc(cx, cy, ry * 0.55, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#fff5b8";
-          ctx.beginPath();
-          ctx.arc(cx, cy, ry * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Hex panel
-          ctx.fillStyle = "#3a1f04";
+        if (sx > 0.45) {
+          ctx.fillStyle = "#6f4208";
           ctx.beginPath();
           for (let i = 0; i < 6; i++) {
-            const a = (Math.PI * 2 * i) / 6;
-            const x = cx + Math.cos(a) * ry * 0.22;
-            const y = cy + Math.sin(a) * ry * 0.22;
+            const a = (Math.PI * 2 * i) / 6 - Math.PI / 6;
+            const x = cx + Math.cos(a) * ry * 0.24;
+            const y = cy + Math.sin(a) * ry * 0.24;
             if (i === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
           }
           ctx.closePath();
           ctx.fill();
-
-          // Surrounding small triangles
-          ctx.fillStyle = "#3a1f04";
+          ctx.strokeStyle = "#6f4208";
+          ctx.lineWidth = 2;
           for (let i = 0; i < 6; i++) {
-            const a = (Math.PI * 2 * i) / 6 + Math.PI / 6;
-            const x = cx + Math.cos(a) * ry * 0.42;
-            const y = cy + Math.sin(a) * ry * 0.42;
+            const a = (Math.PI * 2 * i) / 6;
             ctx.beginPath();
-            ctx.arc(x, y, ry * 0.07, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.moveTo(cx + Math.cos(a) * ry * 0.32, cy + Math.sin(a) * ry * 0.32);
+            ctx.lineTo(cx + Math.cos(a) * ry * 0.64, cy + Math.sin(a) * ry * 0.64);
+            ctx.stroke();
           }
         }
 
-        // Highlight
-        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.fillStyle = "rgba(255,255,255,0.45)";
         ctx.beginPath();
-        ctx.ellipse(cx - rx * 0.4, cy - ry * 0.5, rx * 0.3, ry * 0.15, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx - rx * 0.38, cy - ry * 0.52, Math.max(2, rx * 0.28), ry * 0.13, -0.3, 0, Math.PI * 2);
         ctx.fill();
       },
       W,
@@ -715,76 +681,98 @@ export function createCoinTextures(scene: Phaser.Scene) {
   }
 }
 
-/**
- * Trophy — Globe Cup, the route's goal.
- */
 export function createTrophyTexture(scene: Phaser.Scene) {
-  const W = 200;
-  const H = 260;
+  const W = 210;
+  const H = 270;
   commitCanvasAsTexture(
     scene,
     "trophy",
     (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
-      // Base
-      ctx.fillStyle = "#1a1208";
-      rounded(ctx, 30, h - 40, w - 60, 26, 6);
-      ctx.fill();
-      ctx.fillStyle = "#3a2a14";
-      rounded(ctx, 36, h - 56, w - 72, 18, 4);
-      ctx.fill();
 
-      // Stem
-      const sg = ctx.createLinearGradient(0, 0, 0, h);
-      sg.addColorStop(0, "#fff5b8");
-      sg.addColorStop(0.5, "#ffc83a");
-      sg.addColorStop(1, "#8a5a0a");
-      ctx.fillStyle = sg;
-      rounded(ctx, w / 2 - 14, h - 100, 28, 50, 6);
-      ctx.fill();
-
-      // Cup body — globe-like sphere
+      ctx.fillStyle = "rgba(0,0,0,0.4)";
       ctx.beginPath();
-      ctx.ellipse(w / 2, h / 2 - 10, 70, 80, 0, 0, Math.PI * 2);
-      ctx.fillStyle = sg;
+      ctx.ellipse(w / 2, h - 12, 78, 11, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#5a3a08";
-      ctx.lineWidth = 3;
+
+      const gold = ctx.createLinearGradient(0, 0, w, h);
+      gold.addColorStop(0, "#fff7a8");
+      gold.addColorStop(0.36, "#ffc83a");
+      gold.addColorStop(0.68, "#b76d10");
+      gold.addColorStop(1, "#5b3307");
+
+      ctx.strokeStyle = "#4a2b05";
+      ctx.lineWidth = 6;
+      ctx.fillStyle = gold;
+      ctx.beginPath();
+      ctx.moveTo(49, 101);
+      ctx.bezierCurveTo(11, 100, 9, 54, 45, 52);
+      ctx.bezierCurveTo(41, 72, 45, 89, 62, 96);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(w - 49, 101);
+      ctx.bezierCurveTo(w - 11, 100, w - 9, 54, w - 45, 52);
+      ctx.bezierCurveTo(w - 41, 72, w - 45, 89, w - 62, 96);
+      ctx.closePath();
+      ctx.fill();
       ctx.stroke();
 
-      // Continents (vague)
-      ctx.fillStyle = "#5a3a08";
-      ctx.beginPath();
-      ctx.ellipse(w / 2 - 22, h / 2 - 22, 18, 12, -0.3, 0, Math.PI * 2);
+      ctx.fillStyle = "#1f1408";
+      rounded(ctx, 32, h - 42, w - 64, 25, 6);
       ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(w / 2 + 18, h / 2 + 10, 24, 16, 0.2, 0, Math.PI * 2);
+      ctx.fillStyle = "#5b3307";
+      rounded(ctx, 43, h - 62, w - 86, 22, 5);
       ctx.fill();
+      ctx.fillStyle = gold;
+      rounded(ctx, w / 2 - 20, h - 112, 40, 56, 8);
+      ctx.fill();
+      ctx.strokeStyle = "#4a2b05";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      ctx.fillStyle = gold;
+      ctx.strokeStyle = "#4a2b05";
+      ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.ellipse(w / 2 + 8, h / 2 - 30, 12, 8, 0.1, 0, Math.PI * 2);
+      ctx.moveTo(w / 2 - 62, 25);
+      ctx.quadraticCurveTo(w / 2, 2, w / 2 + 62, 25);
+      ctx.bezierCurveTo(w / 2 + 55, 108, w / 2 + 38, 149, w / 2 + 12, 164);
+      ctx.lineTo(w / 2 - 12, 164);
+      ctx.bezierCurveTo(w / 2 - 38, 149, w / 2 - 55, 108, w / 2 - 62, 25);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.beginPath();
+      ctx.ellipse(w / 2 - 25, 67, 15, 42, -0.2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Latitude lines
-      ctx.strokeStyle = "rgba(90,58,8,0.5)";
-      ctx.lineWidth = 1;
-      for (let i = -2; i <= 2; i++) {
-        const ry = i * 25;
+      ctx.fillStyle = "#8b520e";
+      ctx.beginPath();
+      ctx.ellipse(w / 2 - 15, 65, 12, 9, -0.25, 0, Math.PI * 2);
+      ctx.ellipse(w / 2 + 18, 95, 16, 11, 0.15, 0, Math.PI * 2);
+      ctx.ellipse(w / 2 + 5, 46, 10, 6, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(74,43,5,0.35)";
+      ctx.lineWidth = 2;
+      for (const y of [56, 86, 116]) {
         ctx.beginPath();
-        ctx.ellipse(w / 2, h / 2 - 10, 70, Math.max(4, 80 - Math.abs(ry)), 0, 0, Math.PI * 2);
+        ctx.ellipse(w / 2, y, 42, 10, 0, 0, Math.PI * 2);
         ctx.stroke();
       }
 
-      // Highlight
-      ctx.fillStyle = "rgba(255,255,255,0.35)";
-      ctx.beginPath();
-      ctx.ellipse(w / 2 - 24, h / 2 - 40, 18, 8, -0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "#174f23";
+      rounded(ctx, 46, h - 73, w - 92, 18, 4);
       ctx.fill();
-
-      // Globe Cup label
       ctx.fillStyle = "#fff8e0";
-      ctx.font = "bold 14px sans-serif";
+      ctx.font = "900 13px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("GLOBE CUP", w / 2, h - 18);
+      ctx.textBaseline = "middle";
+      ctx.fillText("GLOBE CUP", w / 2, h - 64);
     },
     W,
     H
