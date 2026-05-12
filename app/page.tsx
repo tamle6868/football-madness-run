@@ -39,7 +39,10 @@ export default function Home() {
           />
         </svg>
         <h2>Vui lòng xoay ngang điện thoại</h2>
-        <p>Football Madness Run chơi tốt nhất ở chế độ ngang. Hãy xoay máy để bắt đầu!</p>
+        <p>
+          Football Madness Run chơi tốt nhất ở chế độ ngang. Hãy xoay máy để
+          bắt đầu!
+        </p>
       </div>
     </main>
   );

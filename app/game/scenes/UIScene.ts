@@ -24,6 +24,9 @@ export class UIScene extends Phaser.Scene {
   private magnetInventory = 2;
   private shieldText!: Phaser.GameObjects.Text;
   private magnetText!: Phaser.GameObjects.Text;
+  private dailyBarX = 0;
+  private dailyBarY = 0;
+  private dailyBarW = 0;
 
   constructor() {
     super("UIScene");
@@ -163,161 +166,158 @@ export class UIScene extends Phaser.Scene {
       });
 
     // ---------- BOTTOM BAR ----------
-    const bottomY = GAME_HEIGHT - 100;
+    const bottomY = GAME_HEIGHT - 82;
+    const bottomH = 82;
     const bottomPanel = this.add.graphics();
-    bottomPanel.fillStyle(0x000000, 0.55);
-    bottomPanel.fillRect(0, bottomY, GAME_WIDTH, 100);
+    bottomPanel.fillStyle(0x000000, 0.5);
+    bottomPanel.fillRect(0, bottomY, GAME_WIDTH, bottomH);
 
     // Slide button
     const slideBtn = this.add
-      .image(80, bottomY + 50, "btn-slide")
-      .setScale(0.85)
+      .image(72, bottomY + 38, "btn-slide")
+      .setScale(0.68)
       .setInteractive({ useHandCursor: true });
     this.add
-      .text(80, bottomY + 95, "SLIDE", {
+      .text(72, bottomY + 64, "SLIDE", {
         fontFamily: "sans-serif",
-        fontSize: "14px",
+        fontSize: "12px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
     this.bindButton(slideBtn, () => this.game.events.emit("ui:slide"));
+    this.bindTouchZone(72, bottomY + 38, 98, 78, slideBtn, () =>
+      this.game.events.emit("ui:slide")
+    );
 
     // Jump button
     const jumpBtn = this.add
-      .image(180, bottomY + 50, "btn-jump")
-      .setScale(0.85)
+      .image(150, bottomY + 38, "btn-jump")
+      .setScale(0.68)
       .setInteractive({ useHandCursor: true });
     this.add
-      .text(180, bottomY + 95, "JUMP", {
+      .text(150, bottomY + 64, "JUMP", {
         fontFamily: "sans-serif",
-        fontSize: "14px",
+        fontSize: "12px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
     this.bindButton(jumpBtn, () => this.game.events.emit("ui:jump"));
+    this.bindTouchZone(150, bottomY + 38, 98, 78, jumpBtn, () =>
+      this.game.events.emit("ui:jump")
+    );
 
-    // Daily Challenge panel
-    const dcX = 250;
-    const dcW = 280;
-    const dcPanel = this.add.image(dcX + dcW / 2, bottomY + 50, "panel");
-    dcPanel.setDisplaySize(dcW, 86);
+    // Compact Daily Challenge panel
+    const dcX = 230;
+    const dcW = 230;
+    const dcPanel = this.add.image(dcX + dcW / 2, bottomY + 40, "panel");
+    dcPanel.setDisplaySize(dcW, 58);
 
     // Calendar icon
     const calG = this.add.graphics();
     calG.fillStyle(0xffffff, 1);
-    calG.fillRoundedRect(dcX + 12, bottomY + 18, 36, 40, 4);
+    calG.fillRoundedRect(dcX + 12, bottomY + 15, 30, 32, 4);
     calG.fillStyle(0xff3845, 1);
-    calG.fillRect(dcX + 12, bottomY + 18, 36, 14);
+    calG.fillRect(dcX + 12, bottomY + 15, 30, 11);
     calG.fillStyle(0x0b1020, 1);
-    calG.fillRect(dcX + 18, bottomY + 14, 4, 8);
-    calG.fillRect(dcX + 38, bottomY + 14, 4, 8);
+    calG.fillRect(dcX + 18, bottomY + 12, 3, 7);
+    calG.fillRect(dcX + 33, bottomY + 12, 3, 7);
     this.add
-      .text(dcX + 30, bottomY + 44, "7", {
+      .text(dcX + 27, bottomY + 36, "7", {
         fontFamily: "sans-serif",
-        fontSize: "20px",
+        fontSize: "17px",
         fontStyle: "bold",
         color: "#0b1020",
       })
       .setOrigin(0.5);
 
-    this.add.text(dcX + 60, bottomY + 14, "DAILY CHALLENGE", {
+    this.add.text(dcX + 52, bottomY + 13, "DAILY", {
       fontFamily: "sans-serif",
-      fontSize: "12px",
+      fontSize: "11px",
       color: "#ffd23a",
       fontStyle: "bold",
     });
-    this.add.text(dcX + 60, bottomY + 30, "Survive 1000m", {
+    this.add.text(dcX + 52, bottomY + 29, "Survive 1000m", {
       fontFamily: "sans-serif",
-      fontSize: "12px",
-      color: "#ffffff",
-    });
-    this.add.text(dcX + 60, bottomY + 44, "without hitting VAR", {
-      fontFamily: "sans-serif",
-      fontSize: "12px",
+      fontSize: "11px",
       color: "#ffffff",
     });
     // Reward
-    this.add.image(dcX + 200, bottomY + 38, "coin-0").setScale(0.4);
-    this.add.text(dcX + 215, bottomY + 30, "500", {
+    this.add.image(dcX + 175, bottomY + 28, "coin-0").setScale(0.28);
+    this.add.text(dcX + 188, bottomY + 20, "500", {
       fontFamily: "sans-serif",
-      fontSize: "16px",
+      fontSize: "13px",
       color: "#ffd23a",
       fontStyle: "bold",
     });
 
     const dailyBarBg = this.add.graphics();
     dailyBarBg.fillStyle(0x000000, 0.6);
-    dailyBarBg.fillRoundedRect(dcX + 12, bottomY + 70, dcW - 30, 8, 4);
+    this.dailyBarX = dcX + 12;
+    this.dailyBarY = bottomY + 49;
+    this.dailyBarW = dcW - 24;
+    dailyBarBg.fillRoundedRect(this.dailyBarX, this.dailyBarY, this.dailyBarW, 6, 3);
     this.dailyBar = this.add.graphics();
     this.dailyText = this.add
-      .text(dcX + dcW - 14, bottomY + 71, "0/1000", {
+      .text(dcX + dcW - 12, bottomY + 47, "0/1000", {
         fontFamily: "sans-serif",
-        fontSize: "10px",
+        fontSize: "9px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(1, 0);
 
     // Mad Meter
-    const mmX = 560;
-    const mmW = 200;
-    const mmPanel = this.add.image(mmX + mmW / 2, bottomY + 50, "panel");
-    mmPanel.setDisplaySize(mmW, 86);
+    const mmX = 500;
+    const mmW = 260;
+    const mmPanel = this.add.image(mmX + mmW / 2, bottomY + 40, "panel");
+    mmPanel.setDisplaySize(mmW, 58);
     this.add
-      .text(mmX + mmW / 2, bottomY + 16, "MAD METER", {
+      .text(mmX + mmW / 2, bottomY + 11, "MAD METER", {
         fontFamily: "sans-serif",
-        fontSize: "14px",
+        fontSize: "13px",
         color: "#32d264",
         fontStyle: "bold",
       })
       .setOrigin(0.5, 0);
     const mmBgG = this.add.graphics();
     mmBgG.fillStyle(0x000000, 0.6);
-    mmBgG.fillRoundedRect(mmX + 14, bottomY + 38, mmW - 60, 20, 4);
+    mmBgG.fillRoundedRect(mmX + 16, bottomY + 30, mmW - 64, 16, 4);
     this.madBar = this.add.graphics();
     // Player face avatar at right of bar
     const avatarG = this.add.graphics();
     avatarG.fillStyle(0xf2c4a0, 1);
-    avatarG.fillCircle(mmX + mmW - 26, bottomY + 48, 14);
+    avatarG.fillCircle(mmX + mmW - 27, bottomY + 38, 13);
     avatarG.fillStyle(0x2a1a0c, 1);
     avatarG.beginPath();
-    avatarG.arc(mmX + mmW - 26, bottomY + 38, 14, Math.PI, 0);
+    avatarG.arc(mmX + mmW - 27, bottomY + 29, 13, Math.PI, 0);
     avatarG.fillPath();
     avatarG.fillStyle(0x0b1020, 1);
-    avatarG.fillCircle(mmX + mmW - 30, bottomY + 48, 1.6);
-    avatarG.fillCircle(mmX + mmW - 22, bottomY + 48, 1.6);
-
-    this.add
-      .text(mmX + mmW / 2 - 22, bottomY + 70, "Coins fill the meter", {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#a0d0ff",
-      })
-      .setOrigin(0.5, 0);
+    avatarG.fillCircle(mmX + mmW - 31, bottomY + 38, 1.5);
+    avatarG.fillCircle(mmX + mmW - 23, bottomY + 38, 1.5);
 
     // Boosts
     const boostsX = 800;
-    const boostsW = 140;
-    const boostsPanel = this.add.image(boostsX + boostsW / 2, bottomY + 50, "panel");
-    boostsPanel.setDisplaySize(boostsW, 86);
+    const boostsW = 150;
+    const boostsPanel = this.add.image(boostsX + boostsW / 2, bottomY + 40, "panel");
+    boostsPanel.setDisplaySize(boostsW, 58);
     this.add
-      .text(boostsX + boostsW / 2, bottomY + 16, "BOOSTS", {
+      .text(boostsX + boostsW / 2, bottomY + 11, "BOOSTS", {
         fontFamily: "sans-serif",
-        fontSize: "14px",
+        fontSize: "12px",
         color: "#a0d0ff",
         fontStyle: "bold",
       })
       .setOrigin(0.5, 0);
     const magnetBtn = this.add
-      .image(boostsX + 38, bottomY + 56, "boost-magnet")
-      .setScale(0.7)
+      .image(boostsX + 48, bottomY + 39, "boost-magnet")
+      .setScale(0.5)
       .setInteractive({ useHandCursor: true });
     this.magnetText = this.add
-      .text(boostsX + 50, bottomY + 70, "2", {
+      .text(boostsX + 58, bottomY + 50, "2", {
         fontFamily: "sans-serif",
-        fontSize: "12px",
+        fontSize: "10px",
         fontStyle: "bold",
         color: "#0b1020",
         backgroundColor: "#ffd23a",
@@ -327,13 +327,13 @@ export class UIScene extends Phaser.Scene {
     this.bindButton(magnetBtn, () => this.useMagnet());
 
     const shieldBtn = this.add
-      .image(boostsX + 100, bottomY + 56, "boost-shield")
-      .setScale(0.7)
+      .image(boostsX + 104, bottomY + 39, "boost-shield")
+      .setScale(0.5)
       .setInteractive({ useHandCursor: true });
     this.shieldText = this.add
-      .text(boostsX + 112, bottomY + 70, "1", {
+      .text(boostsX + 114, bottomY + 50, "1", {
         fontFamily: "sans-serif",
-        fontSize: "12px",
+        fontSize: "10px",
         fontStyle: "bold",
         color: "#0b1020",
         backgroundColor: "#ffd23a",
@@ -344,26 +344,27 @@ export class UIScene extends Phaser.Scene {
 
     // SUPER button
     this.superBtnGlow = this.add
-      .image(GAME_WIDTH - 110, bottomY + 50, "btn-super")
-      .setScale(1)
+      .image(GAME_WIDTH - 96, bottomY + 40, "btn-super")
+      .setScale(0.82)
       .setInteractive({ useHandCursor: true });
     this.add
-      .text(GAME_WIDTH - 110, bottomY + 88, "SUPER", {
+      .text(GAME_WIDTH - 96, bottomY + 65, "SUPER", {
         fontFamily: "sans-serif",
-        fontSize: "16px",
+        fontSize: "13px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
-    this.add
-      .text(GAME_WIDTH - 110, bottomY + 105, "HOLD TO RUN", {
-        fontFamily: "sans-serif",
-        fontSize: "10px",
-        color: "#a0d0ff",
-      })
-      .setOrigin(0.5);
 
     this.bindButton(this.superBtnGlow, () => this.game.events.emit("ui:super"));
+    this.bindTouchZone(
+      GAME_WIDTH - 96,
+      bottomY + 40,
+      118,
+      82,
+      this.superBtnGlow,
+      () => this.game.events.emit("ui:super")
+    );
 
     // ---------- HUD events ----------
     this.game.events.on(
@@ -452,9 +453,9 @@ export class UIScene extends Phaser.Scene {
         this.madBar.fillStyle(color, 1);
         this.madBar.fillRoundedRect(
           mmX + 16 + i * segW,
-          bottomY + 40,
+          bottomY + 32,
           segW - 2,
-          16,
+          12,
           2
         );
       }
@@ -464,13 +465,16 @@ export class UIScene extends Phaser.Scene {
   private redrawProgress() {
     // Daily bar
     this.dailyBar.clear();
-    const dcX = 250;
-    const dcW = 280;
-    const bottomY = GAME_HEIGHT - 100;
-    const dcBarW = (dcW - 30) * this.dailyPct;
+    const dcBarW = this.dailyBarW * this.dailyPct;
     if (dcBarW > 0) {
       this.dailyBar.fillStyle(0x32d264, 1);
-      this.dailyBar.fillRoundedRect(dcX + 12, bottomY + 70, dcBarW, 8, 4);
+      this.dailyBar.fillRoundedRect(
+        this.dailyBarX,
+        this.dailyBarY,
+        dcBarW,
+        6,
+        3
+      );
     }
 
     // Route fill
@@ -495,6 +499,29 @@ export class UIScene extends Phaser.Scene {
       });
       cb();
     });
+  }
+
+  private bindTouchZone(
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    visual: Phaser.GameObjects.Image,
+    cb: () => void
+  ) {
+    this.add
+      .zone(x, y, w, h)
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => {
+        this.tweens.add({
+          targets: visual,
+          scale: visual.scale * 0.92,
+          duration: 70,
+          yoyo: true,
+        });
+        cb();
+      });
   }
 
   private useMagnet() {

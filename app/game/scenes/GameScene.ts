@@ -340,6 +340,29 @@ export class GameScene extends Phaser.Scene {
 
     obs.setData("spec", spec);
     obs.setData("scored", false);
+    if (spec.avoidance === "slide") {
+      const hint = this.add
+        .text(obs.x, obs.y - obs.displayHeight - 18, "SLIDE!", {
+          fontFamily: "sans-serif",
+          fontSize: "28px",
+          fontStyle: "bold",
+          color: "#32d264",
+          stroke: "#0b1020",
+          strokeThickness: 6,
+        })
+        .setOrigin(0.5)
+        .setDepth(12);
+      this.tweens.add({
+        targets: hint,
+        y: hint.y - 10,
+        scale: { from: 1, to: 1.12 },
+        duration: 420,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.inOut",
+      });
+      obs.setData("hint", hint);
+    }
     this.obstacles.add(obs);
   }
 
@@ -522,7 +545,7 @@ export class GameScene extends Phaser.Scene {
       // Smash through
       this.cameras.main.shake(120, 0.01);
       this.spawnHitBurst(obs.x, obs.y - obs.displayHeight / 2);
-      obs.destroy();
+      this.destroyObstacle(obs);
       return;
     }
 
@@ -548,11 +571,20 @@ export class GameScene extends Phaser.Scene {
         onComplete: () => ring.destroy(),
       });
       this.spawnHitBurst(obs.x, obs.y - obs.displayHeight / 2);
-      obs.destroy();
+      this.destroyObstacle(obs);
       return;
     }
 
     this.triggerGameOver(obs);
+  }
+
+  private destroyObstacle(obs: Phaser.Physics.Arcade.Sprite) {
+    const hint = obs.getData("hint") as Phaser.GameObjects.Text | undefined;
+    if (hint && hint.active) {
+      this.tweens.killTweensOf(hint);
+      hint.destroy();
+    }
+    obs.destroy();
   }
 
   private isAvoidingObstacle(
@@ -708,13 +740,17 @@ export class GameScene extends Phaser.Scene {
     for (const o of obstacleChildren) {
       if (!o || !o.active || !o.body) continue;
       o.x += moveX;
+      const hint = o.getData("hint") as Phaser.GameObjects.Text | undefined;
+      if (hint && hint.active) {
+        hint.setPosition(o.x, o.y - o.displayHeight - 18);
+      }
       if (!o.getData("scored") && o.x + o.displayWidth / 2 < PLAYER_X - 20) {
         o.setData("scored", true);
         const spec = o.getData("spec") as ObstacleSpec | undefined;
         this.score += spec?.clearScore ?? 25;
       }
       if (o.x < -240) {
-        o.destroy();
+        this.destroyObstacle(o);
       }
     }
 
