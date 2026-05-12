@@ -7,7 +7,6 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
-    // Stadium covers full play area; sky tucks under top edge as a fade.
     const sky = this.add.image(GAME_WIDTH / 2, 80, "bg-sky");
     sky.setDisplaySize(GAME_WIDTH, 160);
 
@@ -28,9 +27,8 @@ export class MainMenuScene extends Phaser.Scene {
       groundH,
       "bg-ground"
     );
-    ground.tileScaleY = groundH / 96;
+    ground.tileScaleY = groundH / 200;
 
-    // Logo
     const logo = this.add.image(GAME_WIDTH / 2, 110, "logo").setScale(0.65);
     this.tweens.add({
       targets: logo,
@@ -41,11 +39,12 @@ export class MainMenuScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Player demo running in place — anchored bottom-left next to ground
+    this.add.ellipse(200, GROUND_Y - 4, 110, 18, 0x000000, 0.32).setDepth(1);
     const player = this.add
       .image(200, GROUND_Y, "player-run1")
       .setOrigin(0.5, 1)
-      .setScale(1.25);
+      .setScale(1.25)
+      .setDepth(2);
     let frame = 0;
     this.time.addEvent({
       delay: 110,
@@ -56,7 +55,6 @@ export class MainMenuScene extends Phaser.Scene {
       },
     });
 
-    // Speech bubble — kept left of the instructions so the menu stays readable.
     const bubble = this.add
       .image(player.x + 40, player.y - 300, "speech-bubble")
       .setScale(0.8);
@@ -77,7 +75,6 @@ export class MainMenuScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Trophy demo
     const trophy = this.add
       .image(GAME_WIDTH - 170, GROUND_Y - 8, "trophy")
       .setOrigin(0.5, 1)
@@ -91,7 +88,6 @@ export class MainMenuScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Title subline
     this.add
       .text(GAME_WIDTH / 2, 230, "Run, dodge VAR, lift the Globe Cup.", {
         fontFamily: "sans-serif",
@@ -101,7 +97,6 @@ export class MainMenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Best Score
     const best = Number(localStorage.getItem("fmr-best") ?? 0);
     this.add
       .text(GAME_WIDTH / 2, 268, `BEST: ${best.toLocaleString("en-US")}`, {
@@ -112,7 +107,6 @@ export class MainMenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // How To Play panel
     const panelX = GAME_WIDTH / 2 - 280;
     const panelY = 305;
     const panel = this.add.graphics();
@@ -131,9 +125,9 @@ export class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5, 0);
 
     const lines = [
-      "SPACE / ↑ / TAP JUMP — Jump over obstacles",
-      "S / ↓ / TAP SLIDE — Slide under hate",
-      "E / HOLD SUPER — SIUUU ultimate (when meter is full)",
+      "SPACE / UP / TAP JUMP - Jump over obstacles",
+      "S / DOWN / TAP SLIDE - Slide under hazards",
+      "E / HOLD SUPER - SIUUU ultimate (when meter is full)",
     ];
     lines.forEach((line, i) => {
       this.add.text(panelX + 24, panelY + 50 + i * 22, line, {
@@ -143,7 +137,6 @@ export class MainMenuScene extends Phaser.Scene {
       });
     });
 
-    // Start button
     const startBtnX = GAME_WIDTH / 2;
     const startBtnY = 495;
     const startBg = this.add.graphics();
@@ -182,7 +175,6 @@ export class MainMenuScene extends Phaser.Scene {
       });
     });
 
-    // ENTER also starts (avoid SPACE because it conflicts with in-game jump)
     const onEnter = () => this.startGame();
     if (this.input && this.input.keyboard) {
       this.input.keyboard.once("keydown-ENTER", onEnter);
@@ -191,7 +183,6 @@ export class MainMenuScene extends Phaser.Scene {
       this.input.keyboard?.off("keydown-ENTER", onEnter);
     });
 
-    // Subtle floating coins (in side gutters, not overlapping center panel)
     const coinPositions = [
       { x: 80, y: 200 },
       { x: GAME_WIDTH - 80, y: 200 },
@@ -221,7 +212,6 @@ export class MainMenuScene extends Phaser.Scene {
       });
     }
 
-    // Animate ground
     this.tweens.addCounter({
       from: 0,
       to: 1,

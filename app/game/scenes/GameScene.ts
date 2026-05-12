@@ -30,6 +30,7 @@ export class GameScene extends Phaser.Scene {
   private groundBg!: Phaser.GameObjects.TileSprite;
 
   private player!: Phaser.Physics.Arcade.Sprite;
+  private playerShadow!: Phaser.GameObjects.Ellipse;
   private speech!: Phaser.GameObjects.Container;
   private superAura!: Phaser.GameObjects.Image;
   private shieldAura!: Phaser.GameObjects.Image;
@@ -151,7 +152,10 @@ export class GameScene extends Phaser.Scene {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setAlpha(1);
 
-    // Player textures are 120x160 procedural sprites in the v6 baseline.
+    this.playerShadow = this.add
+      .ellipse(PLAYER_X, GROUND_Y - 4, 76, 14, 0x000000, 0.34)
+      .setDepth(7);
+
     this.player = this.physics.add
       .sprite(PLAYER_X, GROUND_Y - 80, "player-run1")
       .setOrigin(0.5, 1);
@@ -314,6 +318,17 @@ export class GameScene extends Phaser.Scene {
         this.scheduleNextCoinPattern();
       }
     });
+  }
+
+  private updatePlayerShadow() {
+    if (!this.playerShadow || !this.player) return;
+    const air = Math.max(0, GROUND_Y - this.player.y);
+    const liftScale = Phaser.Math.Clamp(1 - air / 360, 0.45, 1);
+    const slideScale = this.sliding ? 1.34 : 1;
+    this.playerShadow
+      .setPosition(this.player.x, GROUND_Y - 4)
+      .setScale(liftScale * slideScale, liftScale * 0.78)
+      .setAlpha(0.16 + liftScale * 0.22);
   }
 
   private spawnObstacle() {
@@ -696,6 +711,7 @@ export class GameScene extends Phaser.Scene {
 
   update(_time: number, delta: number) {
     const dt = delta / 1000;
+    this.updatePlayerShadow();
 
     if (!this.gameStarted) {
       this.runFrameTimer += delta;
@@ -775,7 +791,7 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Run animation cycle (real sprite has only 1 frame so we fake bob via scale)
+    // Run animation cycle.
     const onGround = (this.player.body as Phaser.Physics.Arcade.Body).blocked.down;
     if (!this.sliding) {
       if (onGround) {
