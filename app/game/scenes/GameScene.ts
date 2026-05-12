@@ -21,6 +21,15 @@ import {
   type ObstacleKind,
   type ObstacleSpec,
 } from "../assets/manifest";
+import { getCharacter, type CharacterConfig } from "../config/characters";
+import {
+  getCupStage,
+  getNextStage,
+  normalizeRunPerks,
+  type CupRunData,
+  type CupStageConfig,
+  type RunPerks,
+} from "../config/cup";
 
 const PLAYER_RUN_SCALE = 1;
 
@@ -71,25 +80,37 @@ export class GameScene extends Phaser.Scene {
   private runFrame = 0;
 
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
+  private character!: CharacterConfig;
+  private stage!: CupStageConfig;
+  private perks!: RunPerks;
+  private totalDistanceBefore = 0;
+  private stageComplete = false;
+  private bossWarningShown = false;
 
   constructor() {
     super("GameScene");
   }
 
-  init() {
-    this.speed = BASE_SPEED;
+  init(data: CupRunData = {}) {
+    this.character = getCharacter(data.characterId);
+    this.stage = getCupStage(data.stageId);
+    this.perks = normalizeRunPerks(data.perks);
+    this.totalDistanceBefore = data.totalDistance ?? 0;
+    this.speed = BASE_SPEED + this.stage.index * 35;
     this.distance = 0;
-    this.score = 0;
-    this.coinsCollected = 0;
+    this.score = data.score ?? 0;
+    this.coinsCollected = data.coins ?? 0;
     this.sliding = false;
     this.superActive = false;
     this.superRemaining = 0;
     this.madMeter = 0;
-    this.shieldCharges = 1;
+    this.shieldCharges = 1 + this.perks.shieldBonus;
     this.magnetActive = false;
     this.magnetRemaining = 0;
     this.gameStarted = false;
     this.gameOver = false;
+    this.stageComplete = false;
+    this.bossWarningShown = false;
     this.runFrameTimer = 0;
     this.runFrame = 0;
     this.dailyChallengeProgress = Number(
@@ -233,6 +254,7 @@ export class GameScene extends Phaser.Scene {
 
     // Show "GO!" then start; spawning kicks off after countdown
     this.cameras.main.setBackgroundColor("#0b1020");
+    this.showStageIntro();
     this.startCountdown();
 
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -241,6 +263,43 @@ export class GameScene extends Phaser.Scene {
       this.game.events.off("ui:super", this.tryActivateSuper, this);
       this.game.events.off("ui:magnet", this.activateMagnet, this);
       this.game.events.off("ui:grant-shield", this.grantShield, this);
+    });
+  }
+
+  private showStageIntro() {
+    const label = this.add
+      .text(GAME_WIDTH / 2, 128, `${this.stage.title.toUpperCase()} - ${this.stage.theme}`, {
+        fontFamily: "sans-serif",
+        fontSize: "30px",
+        fontStyle: "bold",
+        color: this.stage.accentHex,
+        stroke: "#0b1020",
+        strokeThickness: 7,
+      })
+      .setOrigin(0.5)
+      .setDepth(40);
+    const target = this.add
+      .text(GAME_WIDTH / 2, 164, `TARGET ${this.stage.targetMeters}M / BOSS: ${this.stage.bossName}`, {
+        fontFamily: "sans-serif",
+        fontSize: "18px",
+        fontStyle: "bold",
+        color: "#ffffff",
+        stroke: "#0b1020",
+        strokeThickness: 5,
+      })
+      .setOrigin(0.5)
+      .setDepth(40);
+    this.tweens.add({
+      targets: [label, target],
+      alpha: 0,
+      y: "-=20",
+      duration: 900,
+      delay: 1700,
+      ease: "Sine.inOut",
+      onComplete: () => {
+        label.destroy();
+        target.destroy();
+      },
     });
   }
 
@@ -299,7 +358,7 @@ export class GameScene extends Phaser.Scene {
   private scheduleNextObstacle(delayMs?: number) {
     if (this.gameOver) return;
     // Start gentle, ramp difficulty over distance
-    const baseDelay = Math.max(900, 2200 - this.distance / 4);
+    const baseDelay = Math.max(700, 2200 - this.distance / 4 - this.stage.index * 120);
     const delay = delayMs ?? Phaser.Math.Between(baseDelay - 200, baseDelay + 900);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
@@ -380,8 +439,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   private pickObstacleKind(): ObstacleKind {
+    const effectiveDistance = this.distance + this.stage.index * 85;
     const available = OBSTACLE_KINDS.filter(
-      (kind) => this.distance >= OBSTACLES[kind].minDistance
+      (kind) => effectiveDistance >= OBSTACLES[kind].minDistance
     );
     const pool = available.length > 0 ? available : OBSTACLE_KINDS;
     const totalWeight = pool.reduce(
@@ -509,7 +569,7 @@ export class GameScene extends Phaser.Scene {
     if (this.superActive) return;
     if (this.madMeter < 100) return;
     this.superActive = true;
-    this.superRemaining = SUPER_DURATION;
+    this.superRemaining = SUPER_DURATION * this.character.superDurationMultiplier;
     this.madMeter = 100; // start full
     this.player.setTint(0xfff5b8);
     this.cameras.main.flash(180, 255, 240, 180);
@@ -636,8 +696,12 @@ export class GameScene extends Phaser.Scene {
     if (coin.getData("collected")) return;
     coin.setData("collected", true);
     this.coinsCollected++;
-    this.score += COIN_VALUE;
-    this.madMeter = Math.min(100, this.madMeter + MAD_METER_FILL_PER_COIN);
+    this.score += Math.round(COIN_VALUE * this.perks.scoreMultiplier);
+    const madGain =
+      MAD_METER_FILL_PER_COIN *
+      this.character.madGainMultiplier *
+      (1 + this.perks.madFillBonus);
+    this.madMeter = Math.min(100, this.madMeter + madGain);
     this.game.events.emit("hud:coins", this.coinsCollected);
     this.game.events.emit("hud:mad", this.madMeter);
 
@@ -701,11 +765,104 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(900, () => {
       this.scene.stop("UIScene");
       this.scene.start("GameOverScene", {
+        characterId: this.character.id,
+        stageId: this.stage.id,
+        perks: this.perks,
         score: this.score,
-        distance: Math.floor(this.distance),
+        distance: this.totalDistanceBefore + Math.floor(this.distance),
         coins: this.coinsCollected,
         best: this.best,
+        totalDistance: this.totalDistanceBefore + Math.floor(this.distance),
       });
+    });
+  }
+
+  private showBossWarning() {
+    const boss = this.add
+      .text(GAME_WIDTH / 2, 220, `${this.stage.bossName.toUpperCase()} ENTERS THE MATCH`, {
+        fontFamily: "sans-serif",
+        fontSize: "34px",
+        fontStyle: "bold",
+        color: "#ff3845",
+        stroke: "#0b1020",
+        strokeThickness: 8,
+      })
+      .setOrigin(0.5)
+      .setDepth(55)
+      .setAlpha(0);
+    this.cameras.main.shake(220, 0.006);
+    this.tweens.add({
+      targets: boss,
+      alpha: 1,
+      scale: { from: 0.82, to: 1 },
+      duration: 260,
+      ease: "Back.out",
+      yoyo: true,
+      hold: 720,
+      onComplete: () => boss.destroy(),
+    });
+  }
+
+  private triggerStageComplete() {
+    if (this.stageComplete || this.gameOver) return;
+    this.stageComplete = true;
+    this.gameOver = true;
+    this.particles.stop();
+    this.cameras.main.flash(260, 255, 220, 80);
+    this.cameras.main.shake(160, 0.004);
+
+    const finalScore = Math.floor(this.score);
+    if (finalScore > this.best) {
+      this.best = finalScore;
+      localStorage.setItem("fmr-best", String(this.best));
+    }
+    this.score = finalScore;
+
+    const stageDistance = Math.floor(this.stage.targetMeters);
+    const totalDistance = this.totalDistanceBefore + stageDistance;
+    const newDaily = this.dailyChallengeProgress + stageDistance;
+    localStorage.setItem("fmr-daily-progress", String(newDaily));
+
+    const nextStage = getNextStage(this.stage.id);
+    if (!nextStage) {
+      const totalCoins =
+        Number(localStorage.getItem("fmr-coins") ?? 0) + this.coinsCollected;
+      localStorage.setItem("fmr-coins", String(totalCoins));
+    }
+
+    const result = {
+      characterId: this.character.id,
+      stageId: this.stage.id,
+      nextStageId: nextStage?.id,
+      perks: this.perks,
+      score: this.score,
+      stageScore: this.score,
+      coins: this.coinsCollected,
+      distance: stageDistance,
+      totalDistance,
+    };
+
+    const label = this.add
+      .text(GAME_WIDTH / 2, GAME_HEIGHT / 2, nextStage ? "STAGE CLEAR!" : "CUP WON!", {
+        fontFamily: "sans-serif",
+        fontSize: "72px",
+        fontStyle: "bold",
+        color: nextStage ? "#32d264" : "#ffd23a",
+        stroke: "#0b1020",
+        strokeThickness: 10,
+      })
+      .setOrigin(0.5)
+      .setDepth(70);
+    this.tweens.add({
+      targets: label,
+      scale: { from: 0.72, to: 1 },
+      duration: 360,
+      ease: "Back.out",
+    });
+
+    this.time.delayedCall(1100, () => {
+      this.scene.stop("UIScene");
+      this.scene.start(nextStage ? "StageCompleteScene" : "TrophyScene", result);
     });
   }
 
@@ -737,6 +894,20 @@ export class GameScene extends Phaser.Scene {
     this.game.events.emit("hud:distance", this.distance);
     this.game.events.emit("hud:score", this.score, this.best);
 
+    if (
+      this.stage.id === "final" &&
+      !this.bossWarningShown &&
+      this.distance >= this.stage.targetMeters * 0.72
+    ) {
+      this.bossWarningShown = true;
+      this.showBossWarning();
+    }
+
+    if (!this.stageComplete && this.distance >= this.stage.targetMeters) {
+      this.triggerStageComplete();
+      return;
+    }
+
     // Daily challenge runtime progress
     const dailyNow = this.dailyChallengeProgress + Math.floor(this.distance);
     this.game.events.emit("hud:daily", dailyNow);
@@ -761,7 +932,7 @@ export class GameScene extends Phaser.Scene {
       if (!o.getData("scored") && o.x + o.displayWidth / 2 < PLAYER_X - 20) {
         o.setData("scored", true);
         const spec = o.getData("spec") as ObstacleSpec | undefined;
-        this.score += spec?.clearScore ?? 25;
+        this.score += Math.round((spec?.clearScore ?? 25) * this.perks.scoreMultiplier);
       }
       if (o.x < -240) {
         this.destroyObstacle(o);

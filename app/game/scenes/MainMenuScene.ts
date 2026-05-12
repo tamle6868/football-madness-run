@@ -89,7 +89,7 @@ export class MainMenuScene extends Phaser.Scene {
     });
 
     this.add
-      .text(GAME_WIDTH / 2, 230, "Run, dodge VAR, lift the Globe Cup.", {
+      .text(GAME_WIDTH / 2, 230, "Win five meme football rounds and lift the cup.", {
         fontFamily: "sans-serif",
         fontSize: "26px",
         color: "#fff8e0",
@@ -125,9 +125,9 @@ export class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5, 0);
 
     const lines = [
-      "SPACE / UP / TAP JUMP - Jump over obstacles",
-      "S / DOWN / TAP SLIDE - Slide under hazards",
-      "E / HOLD SUPER - SIUUU ultimate (when meter is full)",
+      "Pick a legend, then clear Group Stage to Final",
+      "Jump, slide, collect coins, fill the Mad Meter",
+      "Beat the Final to create a shareable trophy card",
     ];
     lines.forEach((line, i) => {
       this.add.text(panelX + 24, panelY + 50 + i * 22, line, {
@@ -149,7 +149,7 @@ export class MainMenuScene extends Phaser.Scene {
     };
     drawStart(0x32d264);
     const startTxt = this.add
-      .text(startBtnX, startBtnY, "START", {
+      .text(startBtnX, startBtnY, "CUP RUN", {
         fontFamily: "sans-serif",
         fontSize: "36px",
         fontStyle: "bold",
@@ -224,7 +224,6 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   private startGame() {
-    this.scene.start("GameScene");
-    this.scene.launch("UIScene");
+    this.scene.start("CharacterSelectScene");
   }
 }

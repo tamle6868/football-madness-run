@@ -78,7 +78,7 @@ export class PreloadScene extends Phaser.Scene {
     createTrophyTexture(this);
 
     this.time.delayedCall(120, () => {
-      this.scene.start("MainMenuScene");
+      this.scene.start("IntroScene");
     });
   }
 }

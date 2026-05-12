@@ -1,7 +1,8 @@
 import * as Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
+import type { CupRunData } from "../config/cup";
 
-interface GameOverData {
+interface GameOverData extends CupRunData {
   score: number;
   distance: number;
   coins: number;
@@ -51,7 +52,7 @@ export class GameOverScene extends Phaser.Scene {
     const isNewBest = data.score >= data.best && data.score > 0;
     if (isNewBest) {
       this.add
-        .text(GAME_WIDTH / 2, panelY + 92, "🏆  NEW BEST SCORE  🏆", {
+        .text(GAME_WIDTH / 2, panelY + 92, "NEW BEST SCORE", {
           fontFamily: "sans-serif",
           fontSize: "20px",
           fontStyle: "bold",
@@ -122,8 +123,13 @@ export class GameOverScene extends Phaser.Scene {
       "RETRY",
       0x32d264,
       () => {
-        this.scene.start("GameScene");
-        this.scene.launch("UIScene");
+        this.scene.start("CupRouteScene", {
+          characterId: data.characterId,
+          stageId: "group",
+          score: 0,
+          coins: 0,
+          totalDistance: 0,
+        });
       }
     );
     void retryBtn;
@@ -166,8 +172,13 @@ export class GameOverScene extends Phaser.Scene {
     });
     const onEnter = () => {
       if (!canTrigger) return;
-      this.scene.start("GameScene");
-      this.scene.launch("UIScene");
+      this.scene.start("CupRouteScene", {
+        characterId: data.characterId,
+        stageId: "group",
+        score: 0,
+        coins: 0,
+        totalDistance: 0,
+      });
     };
     this.input.keyboard?.once("keydown-ENTER", onEnter);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
