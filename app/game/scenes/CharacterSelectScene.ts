@@ -55,15 +55,10 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.drawSelectedPanel();
     this.refreshSelectedPanel();
 
-    this.makeButton(GAME_WIDTH / 2 - 120, 650, 230, 58, "START CUP", 0x32d264, () => {
+    this.makeButton(GAME_WIDTH / 2 - 120, 650, 230, 58, "START RUN", 0x32d264, () => {
       localStorage.setItem("fmr-character", this.selectedId);
-      this.scene.start("CupRouteScene", {
-        characterId: this.selectedId,
-        stageId: "group",
-        score: 0,
-        coins: 0,
-        totalDistance: 0,
-      });
+      this.scene.start("GameScene", { characterId: this.selectedId });
+      this.scene.launch("UIScene");
     });
     this.makeButton(GAME_WIDTH / 2 + 140, 650, 190, 58, "BACK", 0x1d56c2, () => {
       this.scene.start("MainMenuScene");

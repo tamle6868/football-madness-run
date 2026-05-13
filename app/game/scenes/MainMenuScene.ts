@@ -89,7 +89,7 @@ export class MainMenuScene extends Phaser.Scene {
     });
 
     this.add
-      .text(GAME_WIDTH / 2, 230, "Win five meme football rounds and lift the cup.", {
+      .text(GAME_WIDTH / 2, 230, "Run forever, dodge the madness, unleash your legend.", {
         fontFamily: "sans-serif",
         fontSize: "26px",
         color: "#fff8e0",
@@ -125,9 +125,9 @@ export class MainMenuScene extends Phaser.Scene {
       .setOrigin(0.5, 0);
 
     const lines = [
-      "Pick a legend, then clear Group Stage to Final",
+      "Pick a legend with a unique Super skill",
       "Jump, slide, collect coins, fill the Mad Meter",
-      "Beat the Final to create a shareable trophy card",
+      "Use Super to destroy chaos and chase the high score",
     ];
     lines.forEach((line, i) => {
       this.add.text(panelX + 24, panelY + 50 + i * 22, line, {
@@ -149,7 +149,7 @@ export class MainMenuScene extends Phaser.Scene {
     };
     drawStart(0x32d264);
     const startTxt = this.add
-      .text(startBtnX, startBtnY, "CUP RUN", {
+      .text(startBtnX, startBtnY, "START RUN", {
         fontFamily: "sans-serif",
         fontSize: "36px",
         fontStyle: "bold",

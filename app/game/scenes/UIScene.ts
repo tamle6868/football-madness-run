@@ -4,12 +4,6 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
 } from "../constants";
-import {
-  getCupStage,
-  normalizeRunPerks,
-  type CupRunData,
-  type CupStageConfig,
-} from "../config/cup";
 
 export class UIScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
@@ -33,19 +27,9 @@ export class UIScene extends Phaser.Scene {
   private dailyBarX = 0;
   private dailyBarY = 0;
   private dailyBarW = 0;
-  private stage!: CupStageConfig;
-  private startingCoins = 0;
 
   constructor() {
     super("UIScene");
-  }
-
-  init(data: CupRunData = {}) {
-    this.stage = getCupStage(data.stageId);
-    const perks = normalizeRunPerks(data.perks);
-    this.shieldInventory = 1 + perks.shieldBonus;
-    this.magnetInventory = 2 + perks.magnetBonus;
-    this.startingCoins = data.coins ?? 0;
   }
 
   create() {
@@ -86,7 +70,7 @@ export class UIScene extends Phaser.Scene {
 
     // Event panel (route)
     this.add
-      .text(GAME_WIDTH / 2, 12, `EVENT: ${this.stage.title.toUpperCase()}`, {
+      .text(GAME_WIDTH / 2, 12, "EVENT: WORLD CUP ROUTE", {
         fontFamily: "sans-serif",
         fontSize: "16px",
         color: "#ffd23a",
@@ -153,7 +137,7 @@ export class UIScene extends Phaser.Scene {
       ease: "Sine.inOut",
     });
     this.coinsText = this.add
-      .text(GAME_WIDTH - 220, 24, this.startingCoins.toString(), {
+      .text(GAME_WIDTH - 220, 24, "0", {
         fontFamily: "sans-serif",
         fontSize: "26px",
         color: "#ffd23a",
@@ -394,8 +378,8 @@ export class UIScene extends Phaser.Scene {
     this.game.events.on(
       "hud:distance",
       (m: number) => {
-        this.distText.setText(`${Math.floor(m)}M / ${this.stage.targetMeters}M`);
-        this.routeProgress = Math.min(1, m / this.stage.targetMeters);
+        this.distText.setText(`${Math.floor(m)}M`);
+        this.routeProgress = (m % 2000) / 2000;
         this.redrawProgress();
       },
       this

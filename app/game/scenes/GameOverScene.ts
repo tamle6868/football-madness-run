@@ -1,8 +1,9 @@
 import * as Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
-import type { CupRunData } from "../config/cup";
+import type { CharacterId } from "../config/characters";
 
-interface GameOverData extends CupRunData {
+interface GameOverData {
+  characterId?: CharacterId;
   score: number;
   distance: number;
   coins: number;
@@ -63,7 +64,8 @@ export class GameOverScene extends Phaser.Scene {
 
     // Stats grid
     const statY = panelY + 140;
-    const statW = 200;
+    const statW = 170;
+    const statGap = 20;
     const stats = [
       {
         label: "DISTANCE",
@@ -77,8 +79,10 @@ export class GameOverScene extends Phaser.Scene {
       },
       { label: "COINS", value: data.coins.toString(), color: "#ffd23a" },
     ];
+    const statsTotalW = stats.length * statW + (stats.length - 1) * statGap;
+    const statsStartX = GAME_WIDTH / 2 - statsTotalW / 2;
     stats.forEach((s, i) => {
-      const cx = panelX + 40 + i * (statW + 20);
+      const cx = statsStartX + i * (statW + statGap);
       const card = this.add.graphics();
       card.fillStyle(0x1a2348, 1);
       card.fillRoundedRect(cx, statY, statW, 100, 12);
@@ -123,13 +127,8 @@ export class GameOverScene extends Phaser.Scene {
       "RETRY",
       0x32d264,
       () => {
-        this.scene.start("CupRouteScene", {
-          characterId: data.characterId,
-          stageId: "group",
-          score: 0,
-          coins: 0,
-          totalDistance: 0,
-        });
+        this.scene.start("GameScene", { characterId: data.characterId });
+        this.scene.launch("UIScene");
       }
     );
     void retryBtn;
@@ -157,7 +156,7 @@ export class GameOverScene extends Phaser.Scene {
     ];
     const tip = Phaser.Utils.Array.GetRandom(tips);
     this.add
-      .text(GAME_WIDTH / 2, panelY + 480, tip, {
+      .text(GAME_WIDTH / 2, panelY + 455, tip, {
         fontFamily: "sans-serif",
         fontSize: "16px",
         color: "#a0d0ff",
@@ -172,13 +171,8 @@ export class GameOverScene extends Phaser.Scene {
     });
     const onEnter = () => {
       if (!canTrigger) return;
-      this.scene.start("CupRouteScene", {
-        characterId: data.characterId,
-        stageId: "group",
-        score: 0,
-        coins: 0,
-        totalDistance: 0,
-      });
+      this.scene.start("GameScene", { characterId: data.characterId });
+      this.scene.launch("UIScene");
     };
     this.input.keyboard?.once("keydown-ENTER", onEnter);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
