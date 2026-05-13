@@ -1,5 +1,12 @@
 import * as Phaser from "phaser";
-import { GAME_HEIGHT, GAME_WIDTH, GROUND_Y } from "../constants";
+import {
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  GROUND_Y,
+  STADIUM_TOP_Y,
+  STADIUM_VISIBLE_HEIGHT,
+} from "../constants";
+import { addCleanCrowdBand } from "../visuals/stadiumBand";
 
 export class IntroScene extends Phaser.Scene {
   private skipped = false;
@@ -11,22 +18,20 @@ export class IntroScene extends Phaser.Scene {
   create() {
     this.skipped = false;
 
-    const sky = this.add.image(GAME_WIDTH / 2, 80, "bg-sky");
-    sky.setDisplaySize(GAME_WIDTH, 160);
+    const skyH = STADIUM_TOP_Y;
+    const sky = this.add.image(GAME_WIDTH / 2, skyH / 2, "bg-sky");
+    sky.setDisplaySize(GAME_WIDTH, skyH);
 
     const stadium = this.add.tileSprite(
       GAME_WIDTH / 2,
-      GROUND_Y / 2,
+      STADIUM_TOP_Y + STADIUM_VISIBLE_HEIGHT / 2,
       GAME_WIDTH,
-      GROUND_Y,
+      STADIUM_VISIBLE_HEIGHT,
       "bg-stadium"
     );
-    const stadiumSource = this.textures.get("bg-stadium").getSourceImage();
-    const stadiumH =
-      stadiumSource && "height" in stadiumSource
-        ? (stadiumSource as { height: number }).height
-        : GROUND_Y;
-    stadium.tileScaleY = GROUND_Y / stadiumH;
+    stadium.tileScaleY = 1;
+    stadium.tilePositionX = 160;
+    addCleanCrowdBand(this);
     const ground = this.add.tileSprite(
       GAME_WIDTH / 2,
       GROUND_Y + (GAME_HEIGHT - GROUND_Y) / 2,
@@ -58,7 +63,7 @@ export class IntroScene extends Phaser.Scene {
       .setAlpha(0);
 
     const subtitle = this.add
-      .text(GAME_WIDTH / 2, 312, "SURVIVE THE MEMES. WIN THE CUP.", {
+      .text(GAME_WIDTH / 2, 312, "SURVIVE THE MEMES. CHASE THE HIGH SCORE.", {
         fontFamily: "sans-serif",
         fontSize: "32px",
         fontStyle: "bold",
@@ -147,7 +152,7 @@ export class IntroScene extends Phaser.Scene {
       onComplete: () => {
         player.setTexture("player-super");
         this.cameras.main.flash(160, 255, 240, 160);
-        this.cameras.main.shake(180, 0.004);
+        this.cameras.main.shake(120, 0.002);
         this.tweens.add({
           targets: speech,
           alpha: 1,
@@ -170,9 +175,10 @@ export class IntroScene extends Phaser.Scene {
       duration: 5200,
       onUpdate: (tween) => {
         const v = tween.getValue();
-        stadium.tilePositionX = v * 520;
-        ground.tilePositionX = v * 1350;
+        stadium.tilePositionX = v * 260;
+        ground.tilePositionX = v * 850;
       },
+      onComplete: () => this.finish(),
     });
 
     const skip = this.makeButton(
@@ -194,8 +200,7 @@ export class IntroScene extends Phaser.Scene {
   private finish() {
     if (this.skipped) return;
     this.skipped = true;
-    this.cameras.main.fadeOut(260, 8, 12, 28);
-    this.time.delayedCall(280, () => this.scene.start("MainMenuScene"));
+    this.scene.start("MainMenuScene");
   }
 
   private makeButton(

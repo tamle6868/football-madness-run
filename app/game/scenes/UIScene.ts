@@ -102,9 +102,15 @@ export class UIScene extends Phaser.Scene {
         // Runner icon
         g.fillStyle(0x32d264, 1);
         g.fillCircle(cx, routeY, 8);
+        this.drawRouteIcon(g, cx, routeY, "runner");
       } else if (isLast) {
         g.fillStyle(0xffd23a, 1);
         g.fillCircle(cx, routeY, 8);
+        this.drawRouteIcon(g, cx, routeY, "trophy");
+      } else if (i === 2) {
+        this.drawRouteIcon(g, cx, routeY, "ball");
+      } else {
+        this.drawRouteIcon(g, cx, routeY, "coin");
       }
       this.routeNodes.push(g);
     }
@@ -128,13 +134,13 @@ export class UIScene extends Phaser.Scene {
 
     // Coins (top-right)
     const coinIcon = this.add.image(GAME_WIDTH - 240, 36, "coin-0").setScale(0.5);
-    this.tweens.add({
-      targets: coinIcon,
-      scaleX: 0.1,
-      duration: 600,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.inOut",
+    this.time.addEvent({
+      delay: 110,
+      loop: true,
+      callback: () => {
+        const f = Math.floor(this.time.now / 110) % 6;
+        coinIcon.setTexture(`coin-${f}`);
+      },
     });
     this.coinsText = this.add
       .text(GAME_WIDTH - 220, 24, "0", {
@@ -166,8 +172,8 @@ export class UIScene extends Phaser.Scene {
       });
 
     // ---------- BOTTOM BAR ----------
-    const bottomY = GAME_HEIGHT - 82;
-    const bottomH = 82;
+    const bottomY = GAME_HEIGHT - 96;
+    const bottomH = 96;
     const bottomPanel = this.add.graphics();
     bottomPanel.fillStyle(0x000000, 0.5);
     bottomPanel.fillRect(0, bottomY, GAME_WIDTH, bottomH);
@@ -345,10 +351,10 @@ export class UIScene extends Phaser.Scene {
     // SUPER button
     this.superBtnGlow = this.add
       .image(GAME_WIDTH - 96, bottomY + 40, "btn-super")
-      .setScale(0.82)
+      .setScale(0.58)
       .setInteractive({ useHandCursor: true });
     this.add
-      .text(GAME_WIDTH - 96, bottomY + 65, "SUPER", {
+      .text(GAME_WIDTH - 96, bottomY + 68, "SUPER", {
         fontFamily: "sans-serif",
         fontSize: "13px",
         color: "#ffffff",
@@ -360,8 +366,8 @@ export class UIScene extends Phaser.Scene {
     this.bindTouchZone(
       GAME_WIDTH - 96,
       bottomY + 40,
-      118,
-      82,
+      110,
+      84,
       this.superBtnGlow,
       () => this.game.events.emit("ui:super")
     );
@@ -435,6 +441,51 @@ export class UIScene extends Phaser.Scene {
     // Initial draws
     this.redrawMad(mmX, bottomY, mmW);
     this.redrawProgress();
+  }
+
+  private drawRouteIcon(
+    g: Phaser.GameObjects.Graphics,
+    x: number,
+    y: number,
+    icon: "runner" | "coin" | "ball" | "trophy"
+  ) {
+    if (icon === "runner") {
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(x - 3, y - 7, 3);
+      g.lineStyle(2, 0xffffff, 1);
+      g.lineBetween(x - 1, y - 4, x + 4, y + 1);
+      g.lineBetween(x + 4, y + 1, x - 4, y + 6);
+      g.lineBetween(x + 4, y + 1, x + 8, y + 6);
+      return;
+    }
+
+    if (icon === "ball") {
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(x, y, 7);
+      g.fillStyle(0x0b1020, 1);
+      g.fillCircle(x, y, 2.5);
+      g.fillCircle(x - 5, y - 3, 2);
+      g.fillCircle(x + 5, y - 3, 2);
+      g.fillCircle(x - 3, y + 5, 2);
+      g.fillCircle(x + 4, y + 4, 2);
+      return;
+    }
+
+    if (icon === "trophy") {
+      g.fillStyle(0x0b1020, 1);
+      g.fillRoundedRect(x - 5, y - 7, 10, 10, 2);
+      g.fillRect(x - 2, y + 2, 4, 5);
+      g.fillRect(x - 7, y + 7, 14, 2);
+      g.lineStyle(2, 0x0b1020, 1);
+      g.strokeCircle(x - 7, y - 2, 4);
+      g.strokeCircle(x + 7, y - 2, 4);
+      return;
+    }
+
+    g.fillStyle(0xffd23a, 1);
+    g.fillCircle(x, y, 5);
+    g.lineStyle(2, 0x0b1020, 0.8);
+    g.strokeCircle(x, y, 5);
   }
 
   private redrawMad(mmX: number, bottomY: number, mmW: number) {

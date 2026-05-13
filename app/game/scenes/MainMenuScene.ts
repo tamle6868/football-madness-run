@@ -1,5 +1,12 @@
 import * as Phaser from "phaser";
-import { GAME_HEIGHT, GAME_WIDTH, GROUND_Y } from "../constants";
+import {
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  GROUND_Y,
+  STADIUM_TOP_Y,
+  STADIUM_VISIBLE_HEIGHT,
+} from "../constants";
+import { addCleanCrowdBand } from "../visuals/stadiumBand";
 
 export class MainMenuScene extends Phaser.Scene {
   constructor() {
@@ -7,17 +14,21 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
-    const sky = this.add.image(GAME_WIDTH / 2, 80, "bg-sky");
-    sky.setDisplaySize(GAME_WIDTH, 160);
+    const skyH = STADIUM_TOP_Y;
+    const sky = this.add.image(GAME_WIDTH / 2, skyH / 2, "bg-sky");
+    sky.setDisplaySize(GAME_WIDTH, skyH);
 
-    const stadiumTop = 0;
-    const stadiumH = GROUND_Y - stadiumTop;
-    const stadium = this.add.image(
+    const stadiumTop = STADIUM_TOP_Y;
+    const stadiumH = STADIUM_VISIBLE_HEIGHT;
+    const stadium = this.add.tileSprite(
       GAME_WIDTH / 2,
       stadiumTop + stadiumH / 2,
+      GAME_WIDTH,
+      stadiumH,
       "bg-stadium"
     );
-    stadium.setDisplaySize(GAME_WIDTH, stadiumH);
+    stadium.tilePositionX = 160;
+    addCleanCrowdBand(this);
 
     const groundH = GAME_HEIGHT - GROUND_Y;
     const ground = this.add.tileSprite(
@@ -29,7 +40,7 @@ export class MainMenuScene extends Phaser.Scene {
     );
     ground.tileScaleY = groundH / 200;
 
-    const logo = this.add.image(GAME_WIDTH / 2, 110, "logo").setScale(0.65);
+    const logo = this.add.image(GAME_WIDTH / 2, 105, "logo").setScale(0.58);
     this.tweens.add({
       targets: logo,
       y: 102,
@@ -218,7 +229,7 @@ export class MainMenuScene extends Phaser.Scene {
       duration: 6000,
       repeat: -1,
       onUpdate: (tween) => {
-        ground.tilePositionX = tween.getValue() * 1280;
+        ground.tilePositionX = tween.getValue() * 680;
       },
     });
   }

@@ -2,21 +2,23 @@ export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 
 export const GROUND_Y = 600;
+export const STADIUM_VISIBLE_HEIGHT = 360;
+export const STADIUM_TOP_Y = GROUND_Y - STADIUM_VISIBLE_HEIGHT;
 export const PLAYER_X = 220;
 
 export const GRAVITY = 2200;
 export const JUMP_VELOCITY = -900;
 export const SLIDE_DURATION = 650;
 
-export const BASE_SPEED = 380;
-export const MAX_SPEED = 880;
-export const SPEED_RAMP = 14;
+export const BASE_SPEED = 315;
+export const MAX_SPEED = 760;
+export const SPEED_RAMP = 8;
 
 export const COIN_VALUE = 10;
 export const COIN_DISTANCE_VALUE = 1;
 
 export const SUPER_DURATION = 4500;
-export const MAD_METER_FILL_PER_COIN = 4;
+export const MAD_METER_FILL_PER_COIN = 6;
 export const MAD_METER_DRAIN_DURING_SUPER = 35;
 
 export const DAILY_CHALLENGE_TARGET = 1000;

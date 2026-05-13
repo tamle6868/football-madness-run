@@ -13,6 +13,8 @@ import {
   PLAYER_X,
   SLIDE_DURATION,
   SPEED_RAMP,
+  STADIUM_TOP_Y,
+  STADIUM_VISIBLE_HEIGHT,
   SUPER_DURATION,
 } from "../constants";
 import {
@@ -22,6 +24,7 @@ import {
   type ObstacleSpec,
 } from "../assets/manifest";
 import { getCharacter, type CharacterConfig, type CharacterId } from "../config/characters";
+import { addCleanCrowdBand } from "../visuals/stadiumBand";
 
 const PLAYER_RUN_SCALE = 1;
 
@@ -108,18 +111,16 @@ export class GameScene extends Phaser.Scene {
 
   create() {
     // Backgrounds (parallax)
-    // Sky band sits behind stadium at the very top edge, mostly hidden.
-    this.skyBg = this.add.tileSprite(
-      GAME_WIDTH / 2,
-      80,
-      GAME_WIDTH,
-      160,
-      "bg-sky"
-    );
-    // Stadium fills the whole play area between top HUD and ground so the
-    // real lights/flags/crowd form a continuous backdrop.
-    const stadiumTop = 80;
-    const stadiumH = GROUND_Y - stadiumTop;
+    // Keep each background near its native height so browser scaling stays smooth.
+    const skyH = STADIUM_TOP_Y;
+    this.skyBg = this.add.tileSprite(GAME_WIDTH / 2, skyH / 2, GAME_WIDTH, skyH, "bg-sky");
+    const skyTex = this.textures.get("bg-sky").getSourceImage();
+    const skyNativeH =
+      skyTex && "height" in skyTex ? (skyTex as { height: number }).height : skyH;
+    this.skyBg.tileScaleY = skyH / skyNativeH;
+
+    const stadiumTop = STADIUM_TOP_Y;
+    const stadiumH = STADIUM_VISIBLE_HEIGHT;
     this.stadiumBg = this.add.tileSprite(
       GAME_WIDTH / 2,
       stadiumTop + stadiumH / 2,
@@ -127,10 +128,9 @@ export class GameScene extends Phaser.Scene {
       stadiumH,
       "bg-stadium"
     );
-    const stadiumTex = this.textures.get("bg-stadium").getSourceImage();
-    const stadiumNativeH =
-      stadiumTex && "height" in stadiumTex ? (stadiumTex as { height: number }).height : stadiumH;
-    this.stadiumBg.tileScaleY = stadiumH / stadiumNativeH;
+    this.stadiumBg.tileScaleY = 1;
+    this.stadiumBg.tilePositionX = 160;
+    addCleanCrowdBand(this);
     // Ground tile: grass top, dirt bottom. Place so the grass strip aligns
     // with GROUND_Y and scale the source art into the visible band.
     const groundH = GAME_HEIGHT - GROUND_Y;
@@ -290,7 +290,7 @@ export class GameScene extends Phaser.Scene {
             cnt.destroy();
             this.gameStarted = true;
             // Start spawning obstacles & coins after countdown
-            this.scheduleNextObstacle(1500);
+            this.scheduleNextObstacle(1200);
             this.scheduleNextCoinPattern(700);
           },
         });
@@ -308,8 +308,8 @@ export class GameScene extends Phaser.Scene {
   private scheduleNextObstacle(delayMs?: number) {
     if (this.gameOver) return;
     // Start gentle, ramp difficulty over distance
-    const baseDelay = Math.max(700, 2200 - this.distance / 4);
-    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 200, baseDelay + 900);
+    const baseDelay = Math.max(820, 2050 - this.distance / 5);
+    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 160, baseDelay + 720);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnObstacle();
@@ -340,12 +340,16 @@ export class GameScene extends Phaser.Scene {
       .setAlpha(0.16 + liftScale * 0.22);
   }
 
-  private spawnObstacle() {
-    const kind = this.pickObstacleKind();
+  private spawnObstacle(
+    x = GAME_WIDTH + 200,
+    forcedKind?: ObstacleKind,
+    allowCombo = true
+  ) {
+    const kind = forcedKind ?? this.pickObstacleKind();
     const spec = OBSTACLES[kind];
 
     const obs = this.physics.add.sprite(
-      GAME_WIDTH + 200,
+      x,
       GROUND_Y - spec.liftOffset,
       spec.textureKey
     );
@@ -386,6 +390,12 @@ export class GameScene extends Phaser.Scene {
       obs.setData("hint", hint);
     }
     this.obstacles.add(obs);
+
+    const comboChance = Phaser.Math.Clamp((this.distance - 220) / 900, 0, 0.32);
+    if (allowCombo && Phaser.Math.FloatBetween(0, 1) < comboChance) {
+      const spacing = Phaser.Math.Between(300, 380);
+      this.spawnObstacle(x + spacing, undefined, false);
+    }
   }
 
   private pickObstacleKind(): ObstacleKind {
@@ -406,8 +416,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnCoinPattern() {
-    // Patterns: line, arc, zigzag
-    const patterns = ["line", "arc", "zigzag"] as const;
+    // Patterns: line, arc, zigzag, stair
+    const patterns = ["line", "arc", "zigzag", "stair"] as const;
     const pat = patterns[Phaser.Math.Between(0, patterns.length - 1)];
     const startX = GAME_WIDTH + 100;
     const baseY = GROUND_Y - 130;
@@ -422,6 +432,8 @@ export class GameScene extends Phaser.Scene {
         y = baseY - Math.sin(t * Math.PI) * 90;
       } else if (pat === "zigzag") {
         y = baseY + (i % 2 === 0 ? 0 : -60);
+      } else if (pat === "stair") {
+        y = baseY - i * 18;
       }
       this.spawnCoin(x, y);
     }
@@ -449,7 +461,7 @@ export class GameScene extends Phaser.Scene {
       this.player.setTexture("player-jump");
       // Slight forward tilt for jump pose (since we have one player image)
       this.player.setRotation(0.18);
-      this.cameras.main.shake(80, 0.002);
+      this.cameras.main.shake(50, 0.001);
     }
   }
 
@@ -522,7 +534,7 @@ export class GameScene extends Phaser.Scene {
     this.madMeter = 100; // start full
     this.player.setTint(0xfff5b8);
     this.cameras.main.flash(180, 255, 240, 180);
-    this.cameras.main.shake(150, 0.005);
+    this.cameras.main.shake(90, 0.002);
     this.particles.start();
     this.showSpeech();
 
@@ -566,7 +578,7 @@ export class GameScene extends Phaser.Scene {
 
     if (this.superActive) {
       // Smash through
-      this.cameras.main.shake(120, 0.01);
+      this.cameras.main.shake(80, 0.004);
       this.spawnHitBurst(obs.x, obs.y - obs.displayHeight / 2);
       this.destroyObstacle(obs);
       return;
@@ -580,7 +592,7 @@ export class GameScene extends Phaser.Scene {
     if (this.shieldCharges > 0) {
       this.shieldCharges--;
       this.cameras.main.flash(220, 80, 180, 255);
-      this.cameras.main.shake(140, 0.008);
+      this.cameras.main.shake(90, 0.004);
       // Quick shield ring flash
       const ring = this.add
         .image(this.player.x, this.player.y - 70, "shield-aura")
@@ -644,19 +656,25 @@ export class GameScene extends Phaser.Scene {
   private updateSuperBeam() {
     const sourceX = this.player.x + 28;
     const sourceY = this.player.y - 96;
-    const endX = Math.min(GAME_WIDTH + 80, sourceX + 650);
+    const endX = Math.min(GAME_WIDTH + 40, sourceX + 560);
     const pulse = Math.sin(this.time.now * 0.025);
-    const beamW = 26 + pulse * 8;
+    const beamW = 14 + pulse * 4;
 
     this.superBeam.clear().setVisible(true);
-    this.superBeam.fillStyle(0x18c8ff, 0.16);
-    this.superBeam.fillTriangle(sourceX, sourceY, endX, sourceY - beamW * 1.9, endX, sourceY + beamW * 1.9);
-    this.superBeam.fillStyle(0x7de7ff, 0.24);
-    this.superBeam.fillTriangle(sourceX, sourceY, endX, sourceY - beamW, endX, sourceY + beamW);
-    this.superBeam.lineStyle(5, 0xbdf7ff, 0.9);
-    for (let i = -2; i <= 2; i++) {
-      this.superBeam.lineBetween(sourceX, sourceY + i * 4, endX, sourceY + i * beamW * 0.42);
+    this.superBeam.lineStyle(18, 0x18c8ff, 0.13);
+    this.superBeam.lineBetween(sourceX, sourceY, endX, sourceY + beamW * 0.35);
+    this.superBeam.lineStyle(9, 0x4de7ff, 0.38);
+    this.superBeam.lineBetween(sourceX, sourceY, endX, sourceY + beamW * 0.25);
+    this.superBeam.lineStyle(3, 0xe8fbff, 0.9);
+    this.superBeam.lineBetween(sourceX, sourceY, endX, sourceY + beamW * 0.2);
+    for (let i = 0; i < 8; i++) {
+      const x = sourceX + 55 + i * 62 + pulse * 5;
+      this.superBeam.lineStyle(2, 0xa7f5ff, 0.42);
+      this.superBeam.lineBetween(x - 20, sourceY - 12 - (i % 3) * 4, x + 18, sourceY - 18 - (i % 2) * 7);
+      this.superBeam.lineBetween(x - 28, sourceY + 15 + (i % 2) * 5, x + 10, sourceY + 20 + (i % 3) * 3);
     }
+    this.superBeam.fillStyle(0xbdf7ff, 0.85);
+    this.superBeam.fillCircle(sourceX + 6, sourceY, 8);
 
     const obstacleChildren = this.obstacles
       .getChildren()
@@ -674,7 +692,7 @@ export class GameScene extends Phaser.Scene {
         obstacle.setData("beamHit", true);
         this.score += 35;
         this.spawnHitBurst(obstacle.x, obstacle.y - obstacle.displayHeight / 2);
-        this.cameras.main.shake(80, 0.005);
+        this.cameras.main.shake(45, 0.002);
         this.destroyObstacle(obstacle);
       }
     }
@@ -720,7 +738,7 @@ export class GameScene extends Phaser.Scene {
   private triggerGameOver(obs?: Phaser.Physics.Arcade.Sprite) {
     if (this.gameOver) return;
     this.gameOver = true;
-    this.cameras.main.shake(280, 0.018);
+    this.cameras.main.shake(220, 0.009);
     this.cameras.main.flash(300, 255, 60, 60);
     this.particles.stop();
 
@@ -782,7 +800,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     // Speed ramp
-    const speedTarget = this.superActive ? Math.min(MAX_SPEED, this.speed + 240) : this.speed;
+    const speedTarget = this.superActive ? Math.min(MAX_SPEED, this.speed + 130) : this.speed;
     this.speed = Math.min(MAX_SPEED, this.speed + SPEED_RAMP * dt);
 
     // Distance tracks run progress; score comes from coins and obstacle clears.
@@ -795,9 +813,9 @@ export class GameScene extends Phaser.Scene {
     this.game.events.emit("hud:daily", dailyNow);
 
     // Background scroll
-    this.skyBg.tilePositionX += speedTarget * 0.05 * dt;
-    this.stadiumBg.tilePositionX += speedTarget * 0.25 * dt;
-    this.groundBg.tilePositionX += speedTarget * 1 * dt;
+    this.skyBg.tilePositionX += speedTarget * 0.015 * dt;
+    this.stadiumBg.tilePositionX += speedTarget * 0.08 * dt;
+    this.groundBg.tilePositionX += speedTarget * 0.72 * dt;
 
     // Move obstacles & coins manually
     const moveX = -speedTarget * dt;

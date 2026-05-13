@@ -1,7 +1,14 @@
 import * as Phaser from "phaser";
 import { CHARACTERS, DEFAULT_CHARACTER_ID, getCharacter } from "../config/characters";
 import type { CharacterConfig, CharacterId } from "../config/characters";
-import { GAME_HEIGHT, GAME_WIDTH, GROUND_Y } from "../constants";
+import {
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  GROUND_Y,
+  STADIUM_TOP_Y,
+  STADIUM_VISIBLE_HEIGHT,
+} from "../constants";
+import { addCleanCrowdBand } from "../visuals/stadiumBand";
 
 export class CharacterSelectScene extends Phaser.Scene {
   private selectedId: CharacterId = DEFAULT_CHARACTER_ID;
@@ -66,11 +73,19 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
 
   private drawBackground() {
-    const sky = this.add.image(GAME_WIDTH / 2, 80, "bg-sky");
-    sky.setDisplaySize(GAME_WIDTH, 160);
+    const skyH = STADIUM_TOP_Y;
+    const sky = this.add.image(GAME_WIDTH / 2, skyH / 2, "bg-sky");
+    sky.setDisplaySize(GAME_WIDTH, skyH);
 
-    const stadium = this.add.image(GAME_WIDTH / 2, GROUND_Y / 2, "bg-stadium");
-    stadium.setDisplaySize(GAME_WIDTH, GROUND_Y);
+    const stadium = this.add.tileSprite(
+      GAME_WIDTH / 2,
+      STADIUM_TOP_Y + STADIUM_VISIBLE_HEIGHT / 2,
+      GAME_WIDTH,
+      STADIUM_VISIBLE_HEIGHT,
+      "bg-stadium"
+    );
+    stadium.tilePositionX = 160;
+    addCleanCrowdBand(this);
 
     const ground = this.add.tileSprite(
       GAME_WIDTH / 2,
