@@ -184,8 +184,9 @@ export class GameOverScene extends Phaser.Scene {
     // ── Fade-in entrance ─────────────────────────────────────────
     const modalObjs = this.children.list.filter((o) => o !== dim);
     for (const o of modalObjs) {
-      if (typeof (o as Phaser.GameObjects.Components.Alpha).setAlpha === "function") {
-        (o as Phaser.GameObjects.Components.Alpha).setAlpha(0);
+      const alphaObj = o as unknown as Phaser.GameObjects.Components.Alpha;
+      if (typeof alphaObj.setAlpha === "function") {
+        alphaObj.setAlpha(0);
       }
     }
     this.tweens.add({
