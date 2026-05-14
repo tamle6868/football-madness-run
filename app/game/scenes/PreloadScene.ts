@@ -50,7 +50,7 @@ export class PreloadScene extends Phaser.Scene {
     });
     this.load.on("complete", () => title.setText("BUILDING SCENE..."));
 
-    const v = "v3";
+    const v = "v4";
 
     // --- Backgrounds (used as TileSprites, loaded at native size) ---
     this.load.image("bg-sky", `/assets/user/bg_sky.png?v=${v}`);
