@@ -312,9 +312,10 @@ export class GameScene extends Phaser.Scene {
 
   private scheduleNextObstacle(delayMs?: number) {
     if (this.gameOver) return;
-    // Spawn timing tuned for BASE=180 / MAX=380 movement speed
-    const baseDelay = Math.max(550, 1300 - this.distance / 4);
-    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 100, baseDelay + 350);
+    // Generous spacing so players can react at higher speeds.
+    // Starts at 1800ms and slowly shrinks, never below 900ms.
+    const baseDelay = Math.max(900, 1800 - this.distance / 6);
+    const delay = delayMs ?? Phaser.Math.Between(baseDelay, baseDelay + 500);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnObstacle();
@@ -325,7 +326,7 @@ export class GameScene extends Phaser.Scene {
 
   private scheduleNextCoinPattern(delayMs?: number) {
     if (this.gameOver) return;
-    const delay = delayMs ?? Phaser.Math.Between(800, 1500);
+    const delay = delayMs ?? Phaser.Math.Between(600, 1200);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnCoinPattern();
@@ -396,9 +397,11 @@ export class GameScene extends Phaser.Scene {
     }
     this.obstacles.add(obs);
 
-    const comboChance = Phaser.Math.Clamp((this.distance - 220) / 900, 0, 0.32);
+    // Combo: occasionally spawn a second obstacle further ahead.
+    // Wide spacing gives the player time to react between the pair.
+    const comboChance = Phaser.Math.Clamp((this.distance - 300) / 1200, 0, 0.25);
     if (allowCombo && Phaser.Math.FloatBetween(0, 1) < comboChance) {
-      const spacing = Phaser.Math.Between(300, 380);
+      const spacing = Phaser.Math.Between(450, 580);
       this.spawnObstacle(x + spacing, undefined, false);
     }
   }

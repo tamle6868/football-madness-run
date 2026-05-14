@@ -15,15 +15,15 @@ export const GRAVITY = 2200;
 export const JUMP_VELOCITY = -900;
 export const SLIDE_DURATION = 650;
 
-export const BASE_SPEED = 180;
-export const MAX_SPEED = 380;
-export const SPEED_RAMP = 4;
+export const BASE_SPEED = 280;
+export const MAX_SPEED = 520;
+export const SPEED_RAMP = 3;
 
 export const COIN_VALUE = 10;
 export const COIN_DISTANCE_VALUE = 1;
 
 export const SUPER_DURATION = 4500;
-export const MAD_METER_FILL_PER_COIN = 6;
+export const MAD_METER_FILL_PER_COIN = 8;
 export const MAD_METER_DRAIN_DURING_SUPER = 35;
 
 export const DAILY_CHALLENGE_TARGET = 1000;
