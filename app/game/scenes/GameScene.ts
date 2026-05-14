@@ -44,7 +44,6 @@ export class GameScene extends Phaser.Scene {
   private shieldAura!: Phaser.GameObjects.Image;
   private magnetAura!: Phaser.GameObjects.Image;
 
-
   private obstacles!: Phaser.Physics.Arcade.Group;
   private coins!: Phaser.Physics.Arcade.Group;
 
@@ -245,8 +244,6 @@ export class GameScene extends Phaser.Scene {
     // Show "GO!" then start; spawning kicks off after countdown
     this.cameras.main.setBackgroundColor("#0b1020");
 
-    // Speed lines overlay (drawn each frame, fades in at higher speeds)
-
     this.startCountdown();
 
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -312,9 +309,9 @@ export class GameScene extends Phaser.Scene {
 
   private scheduleNextObstacle(delayMs?: number) {
     if (this.gameOver) return;
-    // Spawn timing tuned for BASE=180 / MAX=380 movement speed
-    const baseDelay = Math.max(550, 1300 - this.distance / 4);
-    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 100, baseDelay + 350);
+    // Start gentle, ramp difficulty over distance
+    const baseDelay = Math.max(820, 2050 - this.distance / 5);
+    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 160, baseDelay + 720);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnObstacle();
@@ -325,7 +322,7 @@ export class GameScene extends Phaser.Scene {
 
   private scheduleNextCoinPattern(delayMs?: number) {
     if (this.gameOver) return;
-    const delay = delayMs ?? Phaser.Math.Between(800, 1500);
+    const delay = delayMs ?? Phaser.Math.Between(1300, 2400);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnCoinPattern();
@@ -447,7 +444,7 @@ export class GameScene extends Phaser.Scene {
   private spawnCoin(x: number, y: number) {
     const coin = this.physics.add.sprite(x, y, "coin-0");
     coin.setOrigin(0.5);
-    coin.setScale(1);
+    coin.setScale(0.52);
     coin.body!.allowGravity = false;
     coin.setDepth(9);
     const body = coin.body as Phaser.Physics.Arcade.Body;
@@ -979,5 +976,6 @@ export class GameScene extends Phaser.Scene {
       camTargetY,
       0.08
     );
+
   }
 }
