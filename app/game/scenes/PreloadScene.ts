@@ -2,6 +2,11 @@ import * as Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
 import { createUITextures } from "../assets/ui";
 import { createDroneTexture } from "../assets/obstacles";
+import {
+  createGroundTexture,
+  createSkyTexture,
+  createStadiumTexture,
+} from "../assets/background";
 
 /**
  * PreloadScene loads PNG artwork for everything that has a file in
@@ -52,10 +57,13 @@ export class PreloadScene extends Phaser.Scene {
 
     const v = "v2";
 
-    // --- Backgrounds (used as TileSprites at native size, no resize needed) ---
-    this.load.image("bg-sky", `/assets/user/bg_sky.png?v=${v}`);
-    this.load.image("bg-stadium", `/assets/user/bg_stadium.png?v=${v}`);
-    this.load.image("bg-ground", `/assets/user/bg_ground.png?v=${v}`);
+    // --- Backgrounds ---
+    // Calm procedural BGs (dark sky + dim stadium + clean ground) are
+    // generated in create() via createSkyTexture/createStadiumTexture/
+    // createGroundTexture. The raster PNGs in /assets/user/bg_*.png have
+    // confetti, flag bunting and bright floodlights baked in as pixels,
+    // which is what was causing the eye-strain on production, so we no
+    // longer load them.
 
     // --- Logo (displayed at native size) ---
     this.load.image("logo", `/assets/user/logo_full.png?v=${v}`);
@@ -85,6 +93,14 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
+    // ---- Procedural calm backgrounds ----
+    // Replace the noisy panorama PNGs (confetti / flag bunting / bright
+    // floodlights baked in) with the dark, minimal procedural BG defined
+    // in app/game/assets/background.ts.
+    createSkyTexture(this);
+    createStadiumTexture(this);
+    createGroundTexture(this);
+
     // ---- Pre-resize all PNGs to their exact display size ----
     // This eliminates GPU scaling blur at runtime.
 
