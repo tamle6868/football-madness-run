@@ -10,9 +10,9 @@ export const GRAVITY = 2200;
 export const JUMP_VELOCITY = -900;
 export const SLIDE_DURATION = 650;
 
-export const BASE_SPEED = 280;
-export const MAX_SPEED = 580;
-export const SPEED_RAMP = 5;
+export const BASE_SPEED = 315;
+export const MAX_SPEED = 760;
+export const SPEED_RAMP = 8;
 
 export const COIN_VALUE = 10;
 export const COIN_DISTANCE_VALUE = 1;

@@ -1,7 +1,21 @@
 import * as Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
+import {
+  createGroundTexture,
+  createSkyTexture,
+  createStadiumTexture,
+} from "../assets/background";
 import { createUITextures } from "../assets/ui";
-import { createDroneTexture } from "../assets/obstacles";
+import {
+  createCoinTextures,
+  createDroneTexture,
+  createFifaCorruptionTexture,
+  createInjuryCardTexture,
+  createSocialMediaHateTexture,
+  createTrophyTexture,
+  createVarTexture,
+} from "../assets/obstacles";
+import { createPlayerTextures } from "../assets/player";
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -38,36 +52,30 @@ export class PreloadScene extends Phaser.Scene {
     });
     this.load.on("complete", () => title.setText("BUILDING SCENE..."));
 
+    // Only load the logo PNG — all other textures are procedurally
+    // generated below so they render at exact pixel sizes (no scaling
+    // blur, no downscale artifacts, works perfectly at any speed).
     const userAssetVersion = "player-v1";
-    this.load.image("player-run1", `/assets/user/player_run_1.png?v=${userAssetVersion}`);
-    this.load.image("player-run2", `/assets/user/player_run_2.png?v=${userAssetVersion}`);
-    this.load.image("player-run3", `/assets/user/player_run_3.png?v=${userAssetVersion}`);
-    this.load.image("player-run4", `/assets/user/player_run_4.png?v=${userAssetVersion}`);
-    this.load.image("player-jump", `/assets/user/player_jump.png?v=${userAssetVersion}`);
-    this.load.image("player-slide", `/assets/user/player_slide.png?v=${userAssetVersion}`);
-    this.load.image("player-super", `/assets/user/player_super.png?v=${userAssetVersion}`);
     this.load.image("logo", `/assets/user/logo_full.png?v=${userAssetVersion}`);
-
-    const iconAssetVersion = "icon-v1";
-    this.load.image("bg-sky", `/assets/user/bg_sky.png?v=${iconAssetVersion}`);
-    this.load.image("bg-stadium", `/assets/user/bg_stadium.png?v=${iconAssetVersion}`);
-    this.load.image("bg-ground", `/assets/user/bg_ground.png?v=${iconAssetVersion}`);
-    this.load.image("obs-var", `/assets/user/obs_var.png?v=${iconAssetVersion}`);
-    this.load.image("obs-corruption", `/assets/user/obs_corruption.png?v=${iconAssetVersion}`);
-    this.load.image("obs-injury", `/assets/user/obs_injury.png?v=${iconAssetVersion}`);
-    this.load.image("obs-hate", `/assets/user/obs_hate.png?v=${iconAssetVersion}`);
-    this.load.image("trophy", `/assets/user/trophy_full.png?v=${iconAssetVersion}`);
-    for (let frame = 0; frame < 6; frame++) {
-      this.load.image(`coin-${frame}`, `/assets/user/coin_${frame}.png?v=${iconAssetVersion}`);
-    }
   }
 
   create() {
-    // Only generate textures that have NO user-provided PNG file.
-    // All backgrounds, player sprites, obstacles, coins, and trophy
-    // are loaded from /assets/user/ PNGs above — do NOT overwrite them.
-    createUITextures(this);   // btn-slide, btn-jump, btn-super, auras, panels, particles
-    createDroneTexture(this); // obs-drone has no user PNG
+    // Procedural textures are rendered at their exact display dimensions.
+    // This means setScale(0.52) on a 166×220 canvas draws at 86×114 pixels
+    // natively — no GPU downscaling, no bilinear blur, razor-sharp at
+    // any movement speed. This is why the Devin build looked crisp.
+    createSkyTexture(this);
+    createStadiumTexture(this);
+    createGroundTexture(this);
+    createUITextures(this);
+    createPlayerTextures(this);
+    createVarTexture(this);
+    createFifaCorruptionTexture(this);
+    createInjuryCardTexture(this);
+    createSocialMediaHateTexture(this);
+    createDroneTexture(this);
+    createCoinTextures(this);
+    createTrophyTexture(this);
 
     this.time.delayedCall(120, () => {
       this.scene.start("IntroScene");
