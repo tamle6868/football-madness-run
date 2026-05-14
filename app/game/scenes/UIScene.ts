@@ -249,17 +249,21 @@ export class UIScene extends Phaser.Scene {
       this.game.events.emit("ui:jump")
     );
 
-    // ---- Responsive middle panels ----
+    // ---- Bottom middle panels (fixed sizes, centered in available space) ----
     const midLeftEdge = 200;
     const midRightEdge = GAME_WIDTH - 150;
     const midSpace = midRightEdge - midLeftEdge;
-    const panelGap = 12;
 
-    const dcW = Math.round(midSpace * 0.34);
-    const mmW = Math.round(midSpace * 0.36);
-    const boostsW = Math.round(midSpace * 0.24);
-    const totalPanelsW = dcW + mmW + boostsW + panelGap * 2;
-    const panelStartX = midLeftEdge + (midSpace - totalPanelsW) / 2;
+    // Fixed panel widths matching the mockup
+    const dcW = 230;
+    const mmW = 260;
+    const boostsW = 150;
+    const totalPanelsW = dcW + mmW + boostsW;
+    // Distribute remaining space as gaps (min 8px, evenly split)
+    const remainingSpace = Math.max(0, midSpace - totalPanelsW);
+    const panelGap = Math.min(24, Math.max(8, Math.floor(remainingSpace / 4)));
+    const groupW = totalPanelsW + panelGap * 2;
+    const panelStartX = midLeftEdge + (midSpace - groupW) / 2;
 
     const dcX = panelStartX;
     const mmX = dcX + dcW + panelGap;
