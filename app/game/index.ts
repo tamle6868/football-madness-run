@@ -21,9 +21,7 @@ export function createGame(parent: HTMLElement): Phaser.Game {
       autoCenter: Phaser.Scale.CENTER_BOTH,
       width: GAME_WIDTH,
       height: GAME_HEIGHT,
-      autoDensity: true,
     },
-    resolution: typeof window !== "undefined" ? window.devicePixelRatio : 1,
     physics: {
       default: "arcade",
       arcade: {
