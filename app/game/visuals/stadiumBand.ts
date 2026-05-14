@@ -54,13 +54,13 @@ export function addCleanCrowdBand(
     ctx.lineTo(GAME_WIDTH, height - 22);
     ctx.stroke();
 
-    // Dim ad text
+    // Very dim ad text — desaturated grey, low opacity, only every 480px.
     const ads = ["MADNESS RUN", "SIUUU ZONE", "NO VAR", "SUPER MODE"];
-    ctx.fillStyle = "rgba(200,180,80,0.3)";
+    ctx.fillStyle = "rgba(140,150,170,0.18)";
     ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    for (let x = 120, i = 0; x < GAME_WIDTH; x += 300, i++) {
+    for (let x = 160, i = 0; x < GAME_WIDTH; x += 480, i++) {
       ctx.fillText(ads[i % ads.length], x, height - 11);
     }
 

@@ -31,19 +31,19 @@ export function createSkyTexture(scene: Phaser.Scene) {
         ctx.fill();
       }
 
-      // Gentle, diffused floodlight glow — NOT harsh white dots.
-      // Only 3 lights, very soft, low opacity.
-      for (const cx of [280, 640, 1000]) {
-        const cy = h * 0.38;
-        const halo = ctx.createRadialGradient(cx, cy, 20, cx, cy, 280);
-        halo.addColorStop(0, "rgba(180,200,255,0.18)");
-        halo.addColorStop(0.5, "rgba(120,150,220,0.06)");
-        halo.addColorStop(1, "rgba(60,80,140,0)");
+      // Two very dim floodlight halos — just enough to suggest a stadium
+      // is somewhere up there, far from anything that flashes the user.
+      for (const cx of [380, 900]) {
+        const cy = h * 0.42;
+        const halo = ctx.createRadialGradient(cx, cy, 24, cx, cy, 260);
+        halo.addColorStop(0, "rgba(150,170,220,0.10)");
+        halo.addColorStop(0.5, "rgba(90,120,180,0.03)");
+        halo.addColorStop(1, "rgba(40,60,110,0)");
         ctx.fillStyle = halo;
-        ctx.fillRect(cx - 300, cy - 300, 600, 600);
+        ctx.fillRect(cx - 280, cy - 280, 560, 560);
       }
 
-      // NO confetti. NO bright light bulbs. Clean sky.
+      // NO confetti. NO flag bunting. NO bright light bulbs. Clean sky.
     },
     SKY_W,
     SKY_H
@@ -88,22 +88,21 @@ export function createStadiumTexture(scene: Phaser.Scene) {
         ctx.stroke();
       }
 
-      // Soft light beams — much more subtle
-      ctx.globalCompositeOperation = "lighter";
-      for (const cx of [400, 800, 1200]) {
-        const beam = ctx.createLinearGradient(cx, h * 0.15, cx + 60, h);
-        beam.addColorStop(0, "rgba(200,210,240,0.06)");
-        beam.addColorStop(1, "rgba(180,200,230,0)");
+      // Two very faint beams in normal (source-over) blend — never `lighter`,
+      // which causes additive HDR-style blow-outs that hurt the eyes.
+      for (const cx of [500, 1100]) {
+        const beam = ctx.createLinearGradient(cx, h * 0.18, cx + 40, h);
+        beam.addColorStop(0, "rgba(140,160,210,0.035)");
+        beam.addColorStop(1, "rgba(120,150,200,0)");
         ctx.fillStyle = beam;
         ctx.beginPath();
-        ctx.moveTo(cx - 30, h * 0.2);
-        ctx.lineTo(cx + 60, h);
-        ctx.lineTo(cx + 180, h);
-        ctx.lineTo(cx + 30, h * 0.2);
+        ctx.moveTo(cx - 20, h * 0.22);
+        ctx.lineTo(cx + 40, h);
+        ctx.lineTo(cx + 140, h);
+        ctx.lineTo(cx + 20, h * 0.22);
         ctx.closePath();
         ctx.fill();
       }
-      ctx.globalCompositeOperation = "source-over";
 
       // Simplified crowd — just broad color bands, NO individual rectangles.
       // This eliminates the "pixel noise" that causes eye strain when scrolling.
@@ -124,20 +123,21 @@ export function createStadiumTexture(scene: Phaser.Scene) {
         ctx.fillRect(0, crowdTop + i * bandH, w, bandH);
       }
 
-      // Sparse, large colored blocks — suggest crowd shirts without pixel noise
+      // Very sparse, very dim hints of crowd shirts (desaturated cool tones,
+      // alpha <= 0.06) — far below the threshold where the eye registers
+      // colour as motion when scrolling.
       const rand = new Rand(424242);
       const shirtColors = [
-        "rgba(255,210,58,0.12)",
-        "rgba(255,56,69,0.10)",
-        "rgba(29,86,194,0.12)",
-        "rgba(50,210,100,0.10)",
-        "rgba(220,230,240,0.08)",
+        "rgba(70,90,140,0.06)",
+        "rgba(40,60,110,0.05)",
+        "rgba(60,80,130,0.05)",
+        "rgba(50,70,120,0.04)",
       ];
-      for (let y = crowdTop + 6; y < crowdBottom - 10; y += 24) {
-        for (let x = 0; x < w; x += 40) {
-          if (rand.next() < 0.5) continue;
+      for (let y = crowdTop + 8; y < crowdBottom - 12; y += 36) {
+        for (let x = 0; x < w; x += 80) {
+          if (rand.next() < 0.8) continue;
           ctx.fillStyle = rand.pick(shirtColors);
-          ctx.fillRect(x + rand.range(-4, 4), y + rand.range(-2, 2), 28, 16);
+          ctx.fillRect(x + rand.range(-6, 6), y + rand.range(-2, 2), 24, 12);
         }
       }
 
@@ -151,14 +151,9 @@ export function createStadiumTexture(scene: Phaser.Scene) {
       ctx.lineTo(w, h - 24);
       ctx.stroke();
 
-      const ads = ["MADNESS RUN", "WORLD ROUTE", "SUPER SPRINT", "VAR ZONE"];
-      for (let x = 50, i = 0; x < w; x += 380, i++) {
-        ctx.fillStyle = "rgba(200,180,100,0.25)";
-        ctx.font = "700 11px sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(ads[i % ads.length], x + 100, h - 12);
-      }
+      // No ad text on the stadium far layer — it competes for attention
+      // with the close-up ad rail and adds visual noise.
+
 
       // Overall darkening vignette
       const vignette = ctx.createLinearGradient(0, 0, 0, h);
