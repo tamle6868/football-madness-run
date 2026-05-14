@@ -29,18 +29,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(
-      ellipse at top,
-      #1a2348 0%,
-      #0b1020 45%,
-      #04060f 100%
-    );
+  background: #050810;
 }
 
 #game-root canvas {
   display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
   touch-action: none;
 }
 
