@@ -27,6 +27,11 @@ export class UIScene extends Phaser.Scene {
   private dailyBarX = 0;
   private dailyBarY = 0;
   private dailyBarW = 0;
+  private surviveBar!: Phaser.GameObjects.Graphics;
+  private surviveBarX = 0;
+  private surviveBarW = 0;
+  private surviveText!: Phaser.GameObjects.Text;
+  private survivePct = 0;
 
   constructor() {
     super("UIScene");
@@ -34,8 +39,6 @@ export class UIScene extends Phaser.Scene {
 
   create() {
     // ---------- TOP BAR ----------
-    // Score panel: subtle gradient strip so HUD text stays readable
-    // without darkening the stadium BG too much.
     const topPanel = this.add.graphics();
     topPanel.fillStyle(0x000000, 0.35);
     topPanel.fillRect(0, 0, GAME_WIDTH, 22);
@@ -99,7 +102,6 @@ export class UIScene extends Phaser.Scene {
       g.lineStyle(2, 0xffd23a, 0.8);
       g.strokeCircle(cx, routeY, 12);
       if (isFirst) {
-        // Runner icon
         g.fillStyle(0x32d264, 1);
         g.fillCircle(cx, routeY, 8);
         this.drawRouteIcon(g, cx, routeY, "runner");
@@ -114,6 +116,7 @@ export class UIScene extends Phaser.Scene {
       }
       this.routeNodes.push(g);
     }
+
     // Distance text under route
     this.add
       .text(GAME_WIDTH / 2, 64, "DISTANCE", {
@@ -171,14 +174,46 @@ export class UIScene extends Phaser.Scene {
         }
       });
 
+    // ---------- "SURVIVE THE MADNESS" panel (top-right, before pause) ----------
+    const survPanelX = GAME_WIDTH - 260;
+    const survPanelW = 160;
+    const survPanel = this.add.graphics();
+    survPanel.fillStyle(0x0c1432, 0.85);
+    survPanel.fillRoundedRect(survPanelX, 14, survPanelW, 52, 8);
+    survPanel.lineStyle(2, 0x6a8aff, 0.4);
+    survPanel.strokeRoundedRect(survPanelX, 14, survPanelW, 52, 8);
+    this.add
+      .text(survPanelX + survPanelW / 2, 22, "SURVIVE THE MADNESS", {
+        fontFamily: "sans-serif",
+        fontSize: "10px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5, 0);
+    const survBarX = survPanelX + 12;
+    const survBarW = survPanelW - 24;
+    survPanel.fillStyle(0x000000, 0.6);
+    survPanel.fillRoundedRect(survBarX, 40, survBarW, 10, 4);
+    this.surviveBar = this.add.graphics();
+    this.surviveBarX = survBarX;
+    this.surviveBarW = survBarW;
+    this.surviveText = this.add
+      .text(survPanelX + survPanelW - 10, 42, "0%", {
+        fontFamily: "sans-serif",
+        fontSize: "9px",
+        color: "#ffd23a",
+        fontStyle: "bold",
+      })
+      .setOrigin(1, 0);
+
     // ---------- BOTTOM BAR ----------
     const bottomY = GAME_HEIGHT - 96;
     const bottomH = 96;
-    const bottomPanel = this.add.graphics();
-    bottomPanel.fillStyle(0x000000, 0.5);
-    bottomPanel.fillRect(0, bottomY, GAME_WIDTH, bottomH);
+    const bottomPanel2 = this.add.graphics();
+    bottomPanel2.fillStyle(0x000000, 0.5);
+    bottomPanel2.fillRect(0, bottomY, GAME_WIDTH, bottomH);
 
-    // Slide button
+    // Slide button (fixed left)
     const slideBtn = this.add
       .image(72, bottomY + 38, "btn-slide")
       .setScale(0.68)
@@ -196,7 +231,7 @@ export class UIScene extends Phaser.Scene {
       this.game.events.emit("ui:slide")
     );
 
-    // Jump button
+    // Jump button (fixed left)
     const jumpBtn = this.add
       .image(150, bottomY + 38, "btn-jump")
       .setScale(0.68)
@@ -214,13 +249,26 @@ export class UIScene extends Phaser.Scene {
       this.game.events.emit("ui:jump")
     );
 
-    // Compact Daily Challenge panel
-    const dcX = 230;
-    const dcW = 230;
+    // ---- Responsive middle panels ----
+    const midLeftEdge = 200;
+    const midRightEdge = GAME_WIDTH - 150;
+    const midSpace = midRightEdge - midLeftEdge;
+    const panelGap = 12;
+
+    const dcW = Math.round(midSpace * 0.34);
+    const mmW = Math.round(midSpace * 0.36);
+    const boostsW = Math.round(midSpace * 0.24);
+    const totalPanelsW = dcW + mmW + boostsW + panelGap * 2;
+    const panelStartX = midLeftEdge + (midSpace - totalPanelsW) / 2;
+
+    const dcX = panelStartX;
+    const mmX = dcX + dcW + panelGap;
+    const boostsX = mmX + mmW + panelGap;
+
+    // --- Daily Challenge panel ---
     const dcPanel = this.add.image(dcX + dcW / 2, bottomY + 40, "panel");
     dcPanel.setDisplaySize(dcW, 58);
 
-    // Calendar icon
     const calG = this.add.graphics();
     calG.fillStyle(0xffffff, 1);
     calG.fillRoundedRect(dcX + 12, bottomY + 15, 30, 32, 4);
@@ -238,20 +286,20 @@ export class UIScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.add.text(dcX + 52, bottomY + 13, "DAILY", {
+    this.add.text(dcX + 52, bottomY + 13, "DAILY CHALLENGE", {
       fontFamily: "sans-serif",
-      fontSize: "11px",
+      fontSize: "10px",
       color: "#ffd23a",
       fontStyle: "bold",
     });
-    this.add.text(dcX + 52, bottomY + 29, "Survive 1000m", {
+    this.add.text(dcX + 52, bottomY + 27, "Survive 1000m\nWithout Hitting VAR", {
       fontFamily: "sans-serif",
-      fontSize: "11px",
+      fontSize: "9px",
       color: "#ffffff",
+      lineSpacing: 1,
     });
-    // Reward
-    this.add.image(dcX + 175, bottomY + 28, "coin-0").setScale(0.28);
-    this.add.text(dcX + 188, bottomY + 20, "500", {
+    this.add.image(dcX + dcW - 40, bottomY + 22, "coin-0").setScale(0.28);
+    this.add.text(dcX + dcW - 27, bottomY + 16, "500", {
       fontFamily: "sans-serif",
       fontSize: "13px",
       color: "#ffd23a",
@@ -261,12 +309,12 @@ export class UIScene extends Phaser.Scene {
     const dailyBarBg = this.add.graphics();
     dailyBarBg.fillStyle(0x000000, 0.6);
     this.dailyBarX = dcX + 12;
-    this.dailyBarY = bottomY + 49;
+    this.dailyBarY = bottomY + 52;
     this.dailyBarW = dcW - 24;
     dailyBarBg.fillRoundedRect(this.dailyBarX, this.dailyBarY, this.dailyBarW, 6, 3);
     this.dailyBar = this.add.graphics();
     this.dailyText = this.add
-      .text(dcX + dcW - 12, bottomY + 47, "0/1000", {
+      .text(dcX + dcW - 12, bottomY + 50, "0/1000", {
         fontFamily: "sans-serif",
         fontSize: "9px",
         color: "#ffffff",
@@ -274,9 +322,7 @@ export class UIScene extends Phaser.Scene {
       })
       .setOrigin(1, 0);
 
-    // Mad Meter
-    const mmX = 500;
-    const mmW = 260;
+    // --- Mad Meter panel ---
     const mmPanel = this.add.image(mmX + mmW / 2, bottomY + 40, "panel");
     mmPanel.setDisplaySize(mmW, 58);
     this.add
@@ -291,7 +337,6 @@ export class UIScene extends Phaser.Scene {
     mmBgG.fillStyle(0x000000, 0.6);
     mmBgG.fillRoundedRect(mmX + 16, bottomY + 30, mmW - 64, 16, 4);
     this.madBar = this.add.graphics();
-    // Player face avatar at right of bar
     const avatarG = this.add.graphics();
     avatarG.fillStyle(0xf2c4a0, 1);
     avatarG.fillCircle(mmX + mmW - 27, bottomY + 38, 13);
@@ -303,9 +348,7 @@ export class UIScene extends Phaser.Scene {
     avatarG.fillCircle(mmX + mmW - 31, bottomY + 38, 1.5);
     avatarG.fillCircle(mmX + mmW - 23, bottomY + 38, 1.5);
 
-    // Boosts
-    const boostsX = 800;
-    const boostsW = 150;
+    // --- Boosts panel ---
     const boostsPanel = this.add.image(boostsX + boostsW / 2, bottomY + 40, "panel");
     boostsPanel.setDisplaySize(boostsW, 58);
     this.add
@@ -317,11 +360,11 @@ export class UIScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 0);
     const magnetBtn = this.add
-      .image(boostsX + 48, bottomY + 39, "boost-magnet")
+      .image(boostsX + boostsW * 0.32, bottomY + 39, "boost-magnet")
       .setScale(0.5)
       .setInteractive({ useHandCursor: true });
     this.magnetText = this.add
-      .text(boostsX + 58, bottomY + 50, "2", {
+      .text(boostsX + boostsW * 0.32 + 10, bottomY + 50, "2", {
         fontFamily: "sans-serif",
         fontSize: "10px",
         fontStyle: "bold",
@@ -333,11 +376,11 @@ export class UIScene extends Phaser.Scene {
     this.bindButton(magnetBtn, () => this.useMagnet());
 
     const shieldBtn = this.add
-      .image(boostsX + 104, bottomY + 39, "boost-shield")
+      .image(boostsX + boostsW * 0.68, bottomY + 39, "boost-shield")
       .setScale(0.5)
       .setInteractive({ useHandCursor: true });
     this.shieldText = this.add
-      .text(boostsX + 114, bottomY + 50, "1", {
+      .text(boostsX + boostsW * 0.68 + 10, bottomY + 50, "1", {
         fontFamily: "sans-serif",
         fontSize: "10px",
         fontStyle: "bold",
@@ -348,23 +391,31 @@ export class UIScene extends Phaser.Scene {
       .setOrigin(0.5);
     this.bindButton(shieldBtn, () => this.useShield());
 
-    // SUPER button
+    // --- SUPER button (fixed right) ---
     this.superBtnGlow = this.add
-      .image(GAME_WIDTH - 96, bottomY + 40, "btn-super")
+      .image(GAME_WIDTH - 76, bottomY + 36, "btn-super")
       .setScale(0.58)
       .setInteractive({ useHandCursor: true });
     this.add
-      .text(GAME_WIDTH - 96, bottomY + 68, "SUPER", {
+      .text(GAME_WIDTH - 76, bottomY + 62, "SUPER", {
         fontFamily: "sans-serif",
         fontSize: "13px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
+    this.add
+      .text(GAME_WIDTH - 76, bottomY + 77, "HOLD TO RUN", {
+        fontFamily: "sans-serif",
+        fontSize: "8px",
+        color: "#a0d0ff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
 
     this.bindButton(this.superBtnGlow, () => this.game.events.emit("ui:super"));
     this.bindTouchZone(
-      GAME_WIDTH - 96,
+      GAME_WIDTH - 76,
       bottomY + 40,
       110,
       84,
@@ -386,6 +437,8 @@ export class UIScene extends Phaser.Scene {
       (m: number) => {
         this.distText.setText(`${Math.floor(m)}M`);
         this.routeProgress = (m % 2000) / 2000;
+        this.survivePct = Math.min(100, (m / 2000) * 100);
+        this.redrawSurvive();
         this.redrawProgress();
       },
       this
@@ -440,6 +493,7 @@ export class UIScene extends Phaser.Scene {
 
     // Initial draws
     this.redrawMad(mmX, bottomY, mmW);
+    this.redrawSurvive();
     this.redrawProgress();
   }
 
@@ -492,7 +546,6 @@ export class UIScene extends Phaser.Scene {
     this.madBar.clear();
     const w = (mmW - 60) * (this.madPct / 100);
     if (w > 0) {
-      // segmented gradient effect
       const segments = 16;
       const segW = (mmW - 60) / segments;
       const filled = Math.floor((mmW - 60 - segW) * (this.madPct / 100) / segW) + 1;
@@ -511,6 +564,17 @@ export class UIScene extends Phaser.Scene {
         );
       }
     }
+  }
+
+  private redrawSurvive() {
+    this.surviveBar.clear();
+    const fillW = this.surviveBarW * (this.survivePct / 100);
+    if (fillW > 0) {
+      const color = this.survivePct > 50 ? 0x32d264 : 0xffd23a;
+      this.surviveBar.fillStyle(color, 1);
+      this.surviveBar.fillRoundedRect(this.surviveBarX, 40, fillW, 10, 4);
+    }
+    this.surviveText.setText(`${Math.floor(this.survivePct)}%`);
   }
 
   private redrawProgress() {
