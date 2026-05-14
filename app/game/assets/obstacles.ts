@@ -197,7 +197,8 @@ export function createFifaCorruptionTexture(scene: Phaser.Scene) {
       ctx.stroke();
     },
     W,
-    H
+    H,
+    0.50
   );
 }
 
@@ -320,7 +321,8 @@ export function createInjuryCardTexture(scene: Phaser.Scene) {
       ctx.fillRect(w / 2 - 13, h - 34, 26, 7);
     },
     W,
-    H
+    H,
+    0.58
   );
 }
 
@@ -440,7 +442,8 @@ export function createSocialMediaHateTexture(scene: Phaser.Scene) {
       ctx.fillText("!", w - 30, 25);
     },
     W,
-    H
+    H,
+    0.62
   );
 }
 
@@ -520,7 +523,8 @@ export function createVarTexture(scene: Phaser.Scene) {
       ctx.fillText("REVIEW", w / 2, 132);
     },
     W,
-    H
+    H,
+    0.52
   );
 }
 
@@ -614,7 +618,8 @@ export function createDroneTexture(scene: Phaser.Scene) {
       }
     },
     W,
-    H
+    H,
+    0.72
   );
 }
 
@@ -688,7 +693,8 @@ export function createCoinTextures(scene: Phaser.Scene) {
         ctx.fill();
       },
       W,
-      H
+      H,
+      0.52
     );
   }
 }
@@ -789,6 +795,7 @@ export function createTrophyTexture(scene: Phaser.Scene) {
       ctx.fillText("GLOBE CUP", w / 2, h - 64);
     },
     W,
-    H
+    H,
+    0.52
   );
 }

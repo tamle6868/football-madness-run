@@ -32,7 +32,7 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   var: {
     kind: "var",
     textureKey: "obs-var",
-    scale: 0.52,
+    scale: 1,
     liftOffset: 0,
     bodyW: 0.58,
     bodyH: 0.9,
@@ -45,7 +45,7 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   corruption: {
     kind: "corruption",
     textureKey: "obs-corruption",
-    scale: 0.5,
+    scale: 1,
     liftOffset: 0,
     bodyW: 0.58,
     bodyH: 0.82,
@@ -58,7 +58,7 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   injury: {
     kind: "injury",
     textureKey: "obs-injury",
-    scale: 0.58,
+    scale: 1,
     liftOffset: 0,
     bodyW: 0.72,
     bodyH: 0.9,
@@ -71,7 +71,7 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   hate: {
     kind: "hate",
     textureKey: "obs-hate",
-    scale: 0.62,
+    scale: 1,
     liftOffset: 0,
     bodyW: 0.7,
     bodyH: 0.58,
@@ -84,7 +84,7 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   drone: {
     kind: "drone",
     textureKey: "obs-drone",
-    scale: 0.72,
+    scale: 1,
     liftOffset: 58,
     bodyW: 0.76,
     bodyH: 0.45,

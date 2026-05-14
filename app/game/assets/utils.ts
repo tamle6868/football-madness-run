@@ -19,15 +19,25 @@ export function commitCanvasAsTexture(
   key: string,
   draw: (ctx: CanvasRenderingContext2D, w: number, h: number) => void,
   width: number,
-  height: number
+  height: number,
+  /** When set, the canvas is created at width*displayScale × height*displayScale.
+   *  The drawing context is pre-scaled so `draw` still uses original coordinates,
+   *  but the resulting texture is at the exact display size — no GPU scaling needed. */
+  displayScale?: number
 ) {
   if (scene.textures.exists(key)) {
     scene.textures.remove(key);
   }
-  const tex = scene.textures.createCanvas(key, width, height);
+  const s = displayScale ?? 1;
+  const texW = Math.max(1, Math.round(width * s));
+  const texH = Math.max(1, Math.round(height * s));
+  const tex = scene.textures.createCanvas(key, texW, texH);
   if (!tex) throw new Error("createCanvas failed");
   const ctx = tex.getContext();
   ctx.imageSmoothingEnabled = true;
+  if (s !== 1) {
+    ctx.scale(s, s);
+  }
   draw(ctx, width, height);
   tex.refresh();
   return tex;
