@@ -313,9 +313,10 @@ export class GameScene extends Phaser.Scene {
 
   private scheduleNextObstacle(delayMs?: number) {
     if (this.gameOver) return;
-    // Start gentle, ramp difficulty over distance
-    const baseDelay = Math.max(820, 2050 - this.distance / 5);
-    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 160, baseDelay + 720);
+    // Start gentle, ramp difficulty over distance.
+    // Delays are tuned for the 0.50x ground-sync movement speed.
+    const baseDelay = Math.max(500, 1200 - this.distance / 6);
+    const delay = delayMs ?? Phaser.Math.Between(baseDelay - 100, baseDelay + 400);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnObstacle();
@@ -326,7 +327,7 @@ export class GameScene extends Phaser.Scene {
 
   private scheduleNextCoinPattern(delayMs?: number) {
     if (this.gameOver) return;
-    const delay = delayMs ?? Phaser.Math.Between(1300, 2400);
+    const delay = delayMs ?? Phaser.Math.Between(700, 1400);
     this.time.delayedCall(delay, () => {
       if (!this.gameOver) {
         this.spawnCoinPattern();
@@ -822,8 +823,9 @@ export class GameScene extends Phaser.Scene {
     this.stadiumBg.tilePositionX += speedTarget * 0.05 * dt;
     this.groundBg.tilePositionX += speedTarget * 0.50 * dt;
 
-    // Move obstacles & coins manually
-    const moveX = -speedTarget * dt;
+    // Move obstacles & coins at the same rate as the ground layer
+    // so they appear anchored to the pitch, not flying independently.
+    const moveX = -speedTarget * 0.50 * dt;
     const obstacleChildren = this.obstacles
       .getChildren() as Phaser.Physics.Arcade.Sprite[];
     for (const o of obstacleChildren) {

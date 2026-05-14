@@ -31,8 +31,12 @@ export function createGame(parent: HTMLElement): Phaser.Game {
     },
     render: {
       pixelArt: false,
-      roundPixels: false,
-      antialias: true,
+      roundPixels: true,
+      antialias: false,
+    },
+    fps: {
+      target: 60,
+      forceSetTimeOut: false,
     },
     scene: [
       BootScene,
