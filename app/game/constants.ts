@@ -1,5 +1,10 @@
-export const GAME_WIDTH = 1280;
+const isClient = typeof window !== "undefined";
+const aspect = isClient ? window.innerWidth / window.innerHeight : 16 / 9;
+// Clamp aspect to prevent extreme ultrawide breaking physics, but allow up to 24:9
+const safeAspect = Math.max(16 / 9, Math.min(aspect, 24 / 9));
+
 export const GAME_HEIGHT = 720;
+export const GAME_WIDTH = Math.round(GAME_HEIGHT * safeAspect);
 
 export const GROUND_Y = 600;
 export const STADIUM_VISIBLE_HEIGHT = 360;
