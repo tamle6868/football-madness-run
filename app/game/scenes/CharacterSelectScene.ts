@@ -8,7 +8,7 @@ import {
   STADIUM_TOP_Y,
   STADIUM_VISIBLE_HEIGHT,
 } from "../constants";
-import { addCleanCrowdBand } from "../visuals/stadiumBand";
+
 
 export class CharacterSelectScene extends Phaser.Scene {
   private selectedId: CharacterId = DEFAULT_CHARACTER_ID;
@@ -85,7 +85,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       "bg-stadium"
     );
     stadium.tilePositionX = 160;
-    addCleanCrowdBand(this);
+
 
     const ground = this.add.tileSprite(
       GAME_WIDTH / 2,
@@ -97,7 +97,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     ground.tileScaleY = (GAME_HEIGHT - GROUND_Y) / 200;
 
     const dim = this.add.graphics();
-    dim.fillStyle(0x000000, 0.42);
+    dim.fillStyle(0x000000, 0.15);
     dim.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
   }
 

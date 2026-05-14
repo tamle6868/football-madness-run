@@ -24,7 +24,7 @@ import {
   type ObstacleSpec,
 } from "../assets/manifest";
 import { getCharacter, type CharacterConfig, type CharacterId } from "../config/characters";
-import { addCleanCrowdBand } from "../visuals/stadiumBand";
+
 
 const PLAYER_RUN_SCALE = 1;
 
@@ -132,7 +132,7 @@ export class GameScene extends Phaser.Scene {
     );
     this.stadiumBg.tileScaleY = 1;
     this.stadiumBg.tilePositionX = 160;
-    addCleanCrowdBand(this);
+
     // Ground tile: grass top, dirt bottom. Place so the grass strip aligns
     // with GROUND_Y and scale the source art into the visible band.
     const groundH = GAME_HEIGHT - GROUND_Y;

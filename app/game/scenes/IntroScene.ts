@@ -6,7 +6,7 @@ import {
   STADIUM_TOP_Y,
   STADIUM_VISIBLE_HEIGHT,
 } from "../constants";
-import { addCleanCrowdBand } from "../visuals/stadiumBand";
+
 
 export class IntroScene extends Phaser.Scene {
   private skipped = false;
@@ -31,7 +31,7 @@ export class IntroScene extends Phaser.Scene {
     );
     stadium.tileScaleY = 1;
     stadium.tilePositionX = 160;
-    addCleanCrowdBand(this);
+
     const ground = this.add.tileSprite(
       GAME_WIDTH / 2,
       GROUND_Y + (GAME_HEIGHT - GROUND_Y) / 2,
