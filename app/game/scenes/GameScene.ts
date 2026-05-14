@@ -77,6 +77,7 @@ export class GameScene extends Phaser.Scene {
 
   private runFrameTimer = 0;
   private runFrame = 0;
+  private lastCoinFrame = -1;
 
   private particles!: Phaser.GameObjects.Particles.ParticleEmitter;
   private superBeam!: Phaser.GameObjects.Graphics;
@@ -677,8 +678,7 @@ export class GameScene extends Phaser.Scene {
     this.superBeam.fillCircle(sourceX + 6, sourceY, 8);
 
     const obstacleChildren = this.obstacles
-      .getChildren()
-      .slice() as Phaser.Physics.Arcade.Sprite[];
+      .getChildren() as Phaser.Physics.Arcade.Sprite[];
     for (const obstacle of obstacleChildren) {
       if (!obstacle?.active) continue;
       if (obstacle.x < sourceX + 20 || obstacle.x > endX) continue;
@@ -820,8 +820,7 @@ export class GameScene extends Phaser.Scene {
     // Move obstacles & coins manually
     const moveX = -speedTarget * dt;
     const obstacleChildren = this.obstacles
-      .getChildren()
-      .slice() as Phaser.Physics.Arcade.Sprite[];
+      .getChildren() as Phaser.Physics.Arcade.Sprite[];
     for (const o of obstacleChildren) {
       if (!o || !o.active || !o.body) continue;
       o.x += moveX;
@@ -840,13 +839,15 @@ export class GameScene extends Phaser.Scene {
     }
 
     const coinChildren = this.coins
-      .getChildren()
-      .slice() as Phaser.Physics.Arcade.Sprite[];
+      .getChildren() as Phaser.Physics.Arcade.Sprite[];
     const f = Math.floor((this.time.now / 110) % 6);
+    const coinFrameChanged = f !== this.lastCoinFrame;
+    if (coinFrameChanged) this.lastCoinFrame = f;
+    const coinTexKey = `coin-${f}`;
     for (const co of coinChildren) {
       if (!co || !co.active || !co.body) continue;
       co.x += moveX;
-      co.setTexture(`coin-${f}`);
+      if (coinFrameChanged) co.setTexture(coinTexKey);
       if (this.magnetActive) {
         const dx = this.player.x - co.x;
         const dy = this.player.y - 80 - co.y;

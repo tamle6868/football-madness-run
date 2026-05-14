@@ -492,7 +492,7 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.clearRect(0, 0, w, h);
       const cx = w / 2;
       const cy = h / 2;
-      const grad = ctx.createRadialGradient(cx, cy, 30, cx, cy, w / 2);
+      const grad = ctx.createRadialGradient(cx, cy, 12, cx, cy, w / 2);
       grad.addColorStop(0, "rgba(255,80,80,0)");
       grad.addColorStop(0.6, "rgba(255,80,80,0.18)");
       grad.addColorStop(0.95, "rgba(255,80,80,0.5)");
@@ -502,8 +502,8 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.arc(cx, cy, w / 2 - 2, 0, Math.PI * 2);
       ctx.fill();
     },
-    300,
-    300
+    128,
+    128
   );
 
   // Shield aura ring
@@ -514,7 +514,7 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.clearRect(0, 0, w, h);
       const cx = w / 2;
       const cy = h / 2;
-      const grad = ctx.createRadialGradient(cx, cy, 30, cx, cy, w / 2);
+      const grad = ctx.createRadialGradient(cx, cy, 12, cx, cy, w / 2);
       grad.addColorStop(0, "rgba(80,180,255,0)");
       grad.addColorStop(0.6, "rgba(80,180,255,0.2)");
       grad.addColorStop(0.95, "rgba(80,180,255,0.6)");
@@ -524,8 +524,8 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.arc(cx, cy, w / 2 - 2, 0, Math.PI * 2);
       ctx.fill();
     },
-    220,
-    220
+    128,
+    128
   );
 
   // Super aura
@@ -536,7 +536,7 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.clearRect(0, 0, w, h);
       const cx = w / 2;
       const cy = h / 2;
-      const grad = ctx.createRadialGradient(cx, cy, 20, cx, cy, w / 2);
+      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, w / 2);
       grad.addColorStop(0, "rgba(255,255,180,0.4)");
       grad.addColorStop(0.7, "rgba(255,180,40,0.35)");
       grad.addColorStop(1, "rgba(255,80,40,0)");
@@ -545,8 +545,8 @@ export function createUITextures(scene: Phaser.Scene) {
       ctx.arc(cx, cy, w / 2 - 2, 0, Math.PI * 2);
       ctx.fill();
     },
-    280,
-    280
+    128,
+    128
   );
 
   // Particle: spark

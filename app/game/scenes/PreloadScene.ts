@@ -1,21 +1,7 @@
 import * as Phaser from "phaser";
 import { GAME_HEIGHT, GAME_WIDTH } from "../constants";
-import {
-  createGroundTexture,
-  createSkyTexture,
-  createStadiumTexture,
-} from "../assets/background";
 import { createUITextures } from "../assets/ui";
-import {
-  createCoinTextures,
-  createDroneTexture,
-  createFifaCorruptionTexture,
-  createInjuryCardTexture,
-  createSocialMediaHateTexture,
-  createTrophyTexture,
-  createVarTexture,
-} from "../assets/obstacles";
-import { createPlayerTextures } from "../assets/player";
+import { createDroneTexture } from "../assets/obstacles";
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -77,18 +63,11 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    createSkyTexture(this);
-    createStadiumTexture(this);
-    createGroundTexture(this);
-    createUITextures(this);
-    createPlayerTextures(this);
-    createVarTexture(this);
-    createFifaCorruptionTexture(this);
-    createInjuryCardTexture(this);
-    createSocialMediaHateTexture(this);
-    createDroneTexture(this);
-    createCoinTextures(this);
-    createTrophyTexture(this);
+    // Only generate textures that have NO user-provided PNG file.
+    // All backgrounds, player sprites, obstacles, coins, and trophy
+    // are loaded from /assets/user/ PNGs above — do NOT overwrite them.
+    createUITextures(this);   // btn-slide, btn-jump, btn-super, auras, panels, particles
+    createDroneTexture(this); // obs-drone has no user PNG
 
     this.time.delayedCall(120, () => {
       this.scene.start("IntroScene");

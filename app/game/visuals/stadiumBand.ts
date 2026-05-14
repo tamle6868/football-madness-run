@@ -2,63 +2,101 @@ import * as Phaser from "phaser";
 import { Rand } from "../assets/utils";
 import { GAME_WIDTH, GROUND_Y } from "../constants";
 
+/**
+ * Renders the crowd band into a single cached texture instead of
+ * drawing ~600 individual Graphics primitives each time the scene
+ * is created. The resulting image is displayed as a TileSprite so
+ * it can scroll with parallax at near-zero per-frame cost.
+ */
 export function addCleanCrowdBand(
   scene: Phaser.Scene,
   topY = GROUND_Y - 128,
   bottomY = GROUND_Y - 14
 ) {
-  const band = scene.add.graphics();
+  const BAND_KEY = "__crowd_band";
   const height = bottomY - topY;
-  const rand = new Rand(93021);
 
-  band.fillStyle(0x061021, 0.94);
-  band.fillRect(0, topY, GAME_WIDTH, height);
+  // Generate the texture once and cache it for the lifetime of the game.
+  if (!scene.textures.exists(BAND_KEY)) {
+    const canvas = scene.textures.createCanvas(BAND_KEY, GAME_WIDTH, height);
+    if (!canvas) return scene.add.graphics(); // fallback
+    const ctx = canvas.getContext();
+    const rand = new Rand(93021);
 
-  for (let row = 0; row < 8; row++) {
-    const y = topY + 10 + row * 12;
-    band.fillStyle(row % 2 === 0 ? 0x0b1f3d : 0x07162f, 0.72);
-    band.fillRect(0, y, GAME_WIDTH, 10);
-  }
+    // Dark base
+    ctx.fillStyle = "rgba(6,16,33,0.94)";
+    ctx.fillRect(0, 0, GAME_WIDTH, height);
 
-  const shirtColors = [0xffd23a, 0x1d56c2, 0xff3845, 0x32d264, 0xe8edf8, 0xff9a3c];
-  for (let y = topY + 16; y < bottomY - 22; y += 12) {
-    for (let x = 0; x < GAME_WIDTH; x += 13) {
-      if (rand.next() < 0.42) continue;
-      band.fillStyle(rand.pick(shirtColors), rand.range(0.38, 0.78));
-      band.fillRoundedRect(
-        x + rand.range(-2, 2),
-        y + rand.range(-2, 2),
-        rand.range(4, 8),
-        rand.range(5, 8),
-        2
-      );
+    // Row stripes
+    for (let row = 0; row < 8; row++) {
+      const y = 10 + row * 12;
+      ctx.fillStyle = row % 2 === 0 ? "rgba(11,31,61,0.72)" : "rgba(7,22,47,0.72)";
+      ctx.fillRect(0, y, GAME_WIDTH, 10);
     }
+
+    // Crowd dots
+    const shirtColors = ["#ffd23a", "#1d56c2", "#ff3845", "#32d264", "#e8edf8", "#ff9a3c"];
+    for (let y = 16; y < height - 22; y += 12) {
+      for (let x = 0; x < GAME_WIDTH; x += 13) {
+        if (rand.next() < 0.42) continue;
+        const sw = rand.range(4, 8);
+        const sh = rand.range(5, 8);
+        ctx.globalAlpha = rand.range(0.38, 0.78);
+        ctx.fillStyle = rand.pick(shirtColors);
+        ctx.fillRect(
+          x + rand.range(-2, 2),
+          y + rand.range(-2, 2),
+          sw,
+          sh
+        );
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    // Top rail
+    ctx.strokeStyle = "rgba(46,109,184,0.9)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, 4);
+    ctx.lineTo(GAME_WIDTH, 4);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(119,214,255,0.42)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 10);
+    ctx.lineTo(GAME_WIDTH, 10);
+    ctx.stroke();
+
+    // Bottom ad strip
+    ctx.fillStyle = "rgba(6,16,33,0.98)";
+    ctx.fillRect(0, height - 28, GAME_WIDTH, 28);
+    ctx.strokeStyle = "rgba(20,60,122,0.9)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, height - 28);
+    ctx.lineTo(GAME_WIDTH, height - 28);
+    ctx.stroke();
+
+    // Ad panels
+    const ads = ["MADNESS RUN", "SIUUU ZONE", "NO VAR", "SUPER MODE"];
+    for (let x = 42, i = 0; x < GAME_WIDTH; x += 280, i++) {
+      ctx.fillStyle = i % 2 === 0 ? "rgba(16,36,92,0.9)" : "rgba(23,52,38,0.9)";
+      ctx.fillRect(x, height - 24, 220, 18);
+      ctx.fillStyle = "#ffd23a";
+      ctx.font = "bold 12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.globalAlpha = 0.86;
+      ctx.fillText(ads[i % ads.length], x + 110, height - 15);
+      ctx.globalAlpha = 1;
+    }
+
+    canvas.refresh();
   }
 
-  band.lineStyle(4, 0x2e6db8, 0.9);
-  band.lineBetween(0, topY + 4, GAME_WIDTH, topY + 4);
-  band.lineStyle(2, 0x77d6ff, 0.42);
-  band.lineBetween(0, topY + 10, GAME_WIDTH, topY + 10);
+  // Display as a simple image (single draw call)
+  const img = scene.add.image(GAME_WIDTH / 2, topY + height / 2, BAND_KEY);
+  img.setOrigin(0.5);
 
-  band.fillStyle(0x061021, 0.98);
-  band.fillRect(0, bottomY - 28, GAME_WIDTH, 28);
-  band.lineStyle(2, 0x143c7a, 0.9);
-  band.lineBetween(0, bottomY - 28, GAME_WIDTH, bottomY - 28);
-
-  const ads = ["MADNESS RUN", "SIUUU ZONE", "NO VAR", "SUPER MODE"];
-  for (let x = 42, i = 0; x < GAME_WIDTH; x += 280, i++) {
-    band.fillStyle(i % 2 === 0 ? 0x10245c : 0x173426, 0.9);
-    band.fillRoundedRect(x, bottomY - 24, 220, 18, 3);
-    const label = scene.add
-      .text(x + 110, bottomY - 15, ads[i % ads.length], {
-        fontFamily: "sans-serif",
-        fontSize: "12px",
-        fontStyle: "bold",
-        color: "#ffd23a",
-      })
-      .setOrigin(0.5);
-    label.setAlpha(0.86);
-  }
-
-  return band;
+  return img;
 }
