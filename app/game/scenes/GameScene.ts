@@ -43,7 +43,7 @@ export class GameScene extends Phaser.Scene {
   private superAura!: Phaser.GameObjects.Image;
   private shieldAura!: Phaser.GameObjects.Image;
   private magnetAura!: Phaser.GameObjects.Image;
-  private speedLines!: Phaser.GameObjects.Graphics;
+
 
   private obstacles!: Phaser.Physics.Arcade.Group;
   private coins!: Phaser.Physics.Arcade.Group;
@@ -246,7 +246,6 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#0b1020");
 
     // Speed lines overlay (drawn each frame, fades in at higher speeds)
-    this.speedLines = this.add.graphics().setDepth(6).setAlpha(0);
 
     this.startCountdown();
 
@@ -980,29 +979,5 @@ export class GameScene extends Phaser.Scene {
       camTargetY,
       0.08
     );
-
-    // Speed lines — faint horizontal streaks that intensify with speed.
-    // They tell the brain "I am fast" instead of "stuff is flying at me".
-    const speedRatio = Phaser.Math.Clamp(
-      (this.speed - BASE_SPEED) / (MAX_SPEED - BASE_SPEED),
-      0,
-      1
-    );
-    this.speedLines.setAlpha(speedRatio * 0.18);
-    if (speedRatio > 0.05) {
-      this.speedLines.clear();
-      this.speedLines.lineStyle(1, 0xffffff, 0.5);
-      const lineCount = 6 + Math.floor(speedRatio * 10);
-      const seed = Math.floor(this.time.now / 60);
-      for (let i = 0; i < lineCount; i++) {
-        const hash = ((seed + i * 7919) * 104729) % 100000;
-        const y = (hash % GAME_HEIGHT);
-        const len = 80 + (hash % 180) * speedRatio;
-        const x = (hash * 3) % GAME_WIDTH;
-        this.speedLines.lineBetween(x, y, x + len, y);
-      }
-    } else {
-      this.speedLines.clear();
-    }
   }
 }

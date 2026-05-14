@@ -11,61 +11,39 @@ export function createSkyTexture(scene: Phaser.Scene) {
     scene,
     "bg-sky",
     (ctx, w, h) => {
+      // Simple dark gradient — calm, non-distracting
       const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, "#070b19");
-      grad.addColorStop(0.5, "#111b3d");
-      grad.addColorStop(1, "#28366d");
+      grad.addColorStop(0, "#050810");
+      grad.addColorStop(0.5, "#0c1428");
+      grad.addColorStop(1, "#1a2550");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
+      // A handful of subtle stars — NOT confetti
       const rand = new Rand(1337);
-
-      // Distant pin lights.
-      for (let i = 0; i < 55; i++) {
+      for (let i = 0; i < 30; i++) {
         const x = rand.range(0, w);
-        const y = rand.range(0, h * 0.52);
-        const r = rand.range(0.5, 1.4);
-        ctx.fillStyle = `rgba(255,245,190,${rand.range(0.35, 0.9)})`;
+        const y = rand.range(0, h * 0.45);
+        const r = rand.range(0.4, 1.0);
+        ctx.fillStyle = `rgba(200,210,240,${rand.range(0.15, 0.4)})`;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Stadium floodlight bloom, kept broad and soft so the HUD remains legible.
-      const lightXs = [120, 360, 640, 920, 1160];
-      for (const cx of lightXs) {
-        const cy = h * 0.32;
-        const halo = ctx.createRadialGradient(cx, cy, 10, cx, cy, 230);
-        halo.addColorStop(0, "rgba(255,255,230,0.72)");
-        halo.addColorStop(0.32, "rgba(190,215,255,0.2)");
-        halo.addColorStop(1, "rgba(80,110,180,0)");
+      // Gentle, diffused floodlight glow — NOT harsh white dots.
+      // Only 3 lights, very soft, low opacity.
+      for (const cx of [280, 640, 1000]) {
+        const cy = h * 0.38;
+        const halo = ctx.createRadialGradient(cx, cy, 20, cx, cy, 280);
+        halo.addColorStop(0, "rgba(180,200,255,0.18)");
+        halo.addColorStop(0.5, "rgba(120,150,220,0.06)");
+        halo.addColorStop(1, "rgba(60,80,140,0)");
         ctx.fillStyle = halo;
-        ctx.fillRect(cx - 250, cy - 250, 500, 500);
-
-        ctx.fillStyle = "rgba(255,255,245,0.95)";
-        for (let j = 0; j < 4; j++) {
-          ctx.beginPath();
-          ctx.arc(cx - 18 + j * 12, cy, 3, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        ctx.fillRect(cx - 300, cy - 300, 600, 600);
       }
 
-      // Sparse celebration confetti.
-      const colors = ["#ff3845", "#ffc83a", "#32d264", "#1d56c2", "#ffffff", "#ff9a3c"];
-      for (let i = 0; i < 95; i++) {
-        const x = rand.range(0, w);
-        const y = rand.range(0, h * 0.86);
-        const cw = rand.range(2, 5);
-        const ch = rand.range(4, 8);
-        ctx.fillStyle = rand.pick(colors);
-        ctx.globalAlpha = rand.range(0.35, 0.8);
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(rand.range(0, Math.PI * 2));
-        ctx.fillRect(-cw / 2, -ch / 2, cw, ch);
-        ctx.restore();
-      }
-      ctx.globalAlpha = 1;
+      // NO confetti. NO bright light bulbs. Clean sky.
     },
     SKY_W,
     SKY_H
@@ -82,109 +60,111 @@ export function createStadiumTexture(scene: Phaser.Scene) {
     scene,
     "bg-stadium",
     (ctx, w, h) => {
+      // Dark stadium base
       const bg = ctx.createLinearGradient(0, 0, 0, h);
-      bg.addColorStop(0, "#171f48");
-      bg.addColorStop(0.38, "#10183a");
-      bg.addColorStop(1, "#070a18");
+      bg.addColorStop(0, "#0e1432");
+      bg.addColorStop(0.4, "#0a1028");
+      bg.addColorStop(1, "#060810");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // Curved roof and upper tier silhouette.
-      ctx.fillStyle = "#080c20";
+      // Simple curved roof silhouette
+      ctx.fillStyle = "#060a1a";
       ctx.beginPath();
       ctx.moveTo(0, h * 0.36);
-      ctx.quadraticCurveTo(w / 2, h * 0.02, w, h * 0.36);
-      ctx.lineTo(w, h * 0.55);
-      ctx.quadraticCurveTo(w / 2, h * 0.18, 0, h * 0.55);
+      ctx.quadraticCurveTo(w / 2, h * 0.05, w, h * 0.36);
+      ctx.lineTo(w, h * 0.52);
+      ctx.quadraticCurveTo(w / 2, h * 0.2, 0, h * 0.52);
       ctx.closePath();
       ctx.fill();
 
-      // Roof trusses.
-      ctx.strokeStyle = "rgba(135,165,230,0.2)";
-      ctx.lineWidth = 3;
-      for (let x = -120; x < w + 120; x += 120) {
+      // Subtle roof trusses
+      ctx.strokeStyle = "rgba(100,130,200,0.1)";
+      ctx.lineWidth = 2;
+      for (let x = -120; x < w + 120; x += 160) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x + 90, h * 0.32);
+        ctx.lineTo(x + 90, h * 0.3);
         ctx.stroke();
       }
 
-      // Front floodlight beams falling onto the pitch.
+      // Soft light beams — much more subtle
       ctx.globalCompositeOperation = "lighter";
-      for (const cx of [240, 560, 920, 1260]) {
-        const beam = ctx.createLinearGradient(cx, h * 0.12, cx + 80, h);
-        beam.addColorStop(0, "rgba(255,255,230,0.2)");
-        beam.addColorStop(1, "rgba(255,240,160,0)");
+      for (const cx of [400, 800, 1200]) {
+        const beam = ctx.createLinearGradient(cx, h * 0.15, cx + 60, h);
+        beam.addColorStop(0, "rgba(200,210,240,0.06)");
+        beam.addColorStop(1, "rgba(180,200,230,0)");
         ctx.fillStyle = beam;
         ctx.beginPath();
-        ctx.moveTo(cx - 36, h * 0.2);
-        ctx.lineTo(cx + 74, h);
-        ctx.lineTo(cx + 220, h);
-        ctx.lineTo(cx + 36, h * 0.2);
+        ctx.moveTo(cx - 30, h * 0.2);
+        ctx.lineTo(cx + 60, h);
+        ctx.lineTo(cx + 180, h);
+        ctx.lineTo(cx + 30, h * 0.2);
         ctx.closePath();
         ctx.fill();
       }
       ctx.globalCompositeOperation = "source-over";
 
-      // Banner row creates visual rhythm without noisy pixel static.
-      const bannerY = h * 0.38;
-      const bannerH = 34;
-      const banners = ["#ff3845", "#ffd23a", "#1d56c2", "#32d264", "#ffffff", "#ff9a3c"];
-      for (let x = -40, i = 0; x < w + 80; x += 82, i++) {
-        ctx.fillStyle = banners[i % banners.length];
-        ctx.beginPath();
-        ctx.moveTo(x, bannerY);
-        ctx.lineTo(x + 68, bannerY);
-        ctx.lineTo(x + 34, bannerY + bannerH);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = "rgba(0,0,0,0.55)";
-        ctx.lineWidth = 3;
-        ctx.stroke();
-      }
-
-      // Crowd blocks: larger cells and horizontal row shadows read cleaner on mobile.
-      const rand = new Rand(424242);
+      // Simplified crowd — just broad color bands, NO individual rectangles.
+      // This eliminates the "pixel noise" that causes eye strain when scrolling.
       const crowdTop = h * 0.56;
-      const crowdBottom = h * 0.93;
-      const rowH = 13;
-      const colors = ["#ffd23a", "#ff3845", "#e8edf8", "#1d56c2", "#32d264", "#ff9a3c", "#8f65ff"];
+      const crowdBottom = h * 0.92;
+      const crowdH = crowdBottom - crowdTop;
 
-      for (let y = crowdTop; y < crowdBottom; y += rowH) {
-        ctx.fillStyle = y / rowH % 2 < 1 ? "rgba(255,255,255,0.035)" : "rgba(0,0,0,0.16)";
-        ctx.fillRect(0, y, w, rowH);
+      // A few solid dark bands to suggest rows of spectators
+      const rowColors = [
+        "rgba(18,28,60,0.9)",
+        "rgba(12,20,48,0.9)",
+        "rgba(16,24,55,0.9)",
+        "rgba(10,18,42,0.9)",
+      ];
+      const bandH = crowdH / rowColors.length;
+      for (let i = 0; i < rowColors.length; i++) {
+        ctx.fillStyle = rowColors[i];
+        ctx.fillRect(0, crowdTop + i * bandH, w, bandH);
       }
 
-      for (let y = crowdTop + 4; y < crowdBottom; y += rowH) {
-        for (let x = 0; x < w; x += 10) {
-          if (rand.next() < 0.34) continue;
-          const sw = rand.range(4, 8);
-          const sh = rand.range(4, 7);
-          ctx.globalAlpha = rand.range(0.45, 0.88);
-          ctx.fillStyle = rand.pick(colors);
-          ctx.fillRect(x + rand.range(-2, 2), y + rand.range(-2, 2), sw, sh);
+      // Sparse, large colored blocks — suggest crowd shirts without pixel noise
+      const rand = new Rand(424242);
+      const shirtColors = [
+        "rgba(255,210,58,0.12)",
+        "rgba(255,56,69,0.10)",
+        "rgba(29,86,194,0.12)",
+        "rgba(50,210,100,0.10)",
+        "rgba(220,230,240,0.08)",
+      ];
+      for (let y = crowdTop + 6; y < crowdBottom - 10; y += 24) {
+        for (let x = 0; x < w; x += 40) {
+          if (rand.next() < 0.5) continue;
+          ctx.fillStyle = rand.pick(shirtColors);
+          ctx.fillRect(x + rand.range(-4, 4), y + rand.range(-2, 2), 28, 16);
         }
       }
-      ctx.globalAlpha = 1;
 
-      // Lower rail and pitch-side advertising panels.
-      ctx.fillStyle = "#060814";
-      ctx.fillRect(0, h - 28, w, 28);
+      // Lower ad strip — darker, less contrast
+      ctx.fillStyle = "#050810";
+      ctx.fillRect(0, h - 24, w, 24);
+      ctx.strokeStyle = "rgba(30,60,120,0.5)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h - 24);
+      ctx.lineTo(w, h - 24);
+      ctx.stroke();
+
       const ads = ["MADNESS RUN", "WORLD ROUTE", "SUPER SPRINT", "VAR ZONE"];
-      for (let x = 36, i = 0; x < w; x += 310, i++) {
-        ctx.fillStyle = i % 2 === 0 ? "#10245c" : "#1b3a2a";
-        ctx.fillRect(x, h - 24, 250, 18);
-        ctx.fillStyle = "#ffd23a";
-        ctx.font = "900 13px sans-serif";
+      for (let x = 50, i = 0; x < w; x += 380, i++) {
+        ctx.fillStyle = "rgba(200,180,100,0.25)";
+        ctx.font = "700 11px sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(ads[i % ads.length], x + 125, h - 15);
+        ctx.fillText(ads[i % ads.length], x + 100, h - 12);
       }
 
+      // Overall darkening vignette
       const vignette = ctx.createLinearGradient(0, 0, 0, h);
-      vignette.addColorStop(0, "rgba(0,0,0,0.08)");
-      vignette.addColorStop(0.65, "rgba(0,0,0,0)");
-      vignette.addColorStop(1, "rgba(0,0,0,0.35)");
+      vignette.addColorStop(0, "rgba(0,0,0,0.15)");
+      vignette.addColorStop(0.5, "rgba(0,0,0,0.05)");
+      vignette.addColorStop(1, "rgba(0,0,0,0.4)");
       ctx.fillStyle = vignette;
       ctx.fillRect(0, 0, w, h);
     },
@@ -203,54 +183,39 @@ export function createGroundTexture(scene: Phaser.Scene) {
     scene,
     "bg-ground",
     (ctx, w, h) => {
+      // Clean grass strip
       const grassH = 46;
       const turf = ctx.createLinearGradient(0, 0, 0, grassH);
-      turf.addColorStop(0, "#6bd95a");
-      turf.addColorStop(0.42, "#3fa336");
-      turf.addColorStop(1, "#1f6d24");
+      turf.addColorStop(0, "#4ab842");
+      turf.addColorStop(0.5, "#358a2c");
+      turf.addColorStop(1, "#1a5e1e");
       ctx.fillStyle = turf;
       ctx.fillRect(0, 0, w, grassH);
 
-      const rand = new Rand(7);
-      for (let x = 0; x < w; x += 5) {
-        const bh = rand.range(3, 9);
-        ctx.strokeStyle = rand.next() > 0.5 ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.22)";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x, grassH);
-        ctx.lineTo(x + rand.range(-2, 2), grassH - bh);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = "rgba(255,255,255,0.25)";
+      // Subtle white pitch line
+      ctx.fillStyle = "rgba(255,255,255,0.15)";
       ctx.fillRect(0, 2, w, 2);
-      ctx.fillStyle = "rgba(0,0,0,0.35)";
-      ctx.fillRect(0, grassH - 3, w, 5);
 
+      // Dark edge at grass bottom
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.fillRect(0, grassH - 2, w, 3);
+
+      // Simple earth below — solid dark, no brick pattern (reduces visual noise)
       const earth = ctx.createLinearGradient(0, grassH, 0, h);
-      earth.addColorStop(0, "#312011");
-      earth.addColorStop(0.55, "#1d1208");
-      earth.addColorStop(1, "#0c0603");
+      earth.addColorStop(0, "#2a1808");
+      earth.addColorStop(0.6, "#180e04");
+      earth.addColorStop(1, "#0a0602");
       ctx.fillStyle = earth;
       ctx.fillRect(0, grassH, w, h - grassH);
 
-      ctx.strokeStyle = "rgba(0,0,0,0.42)";
+      // A few subtle horizontal lines instead of detailed brick pattern
+      ctx.strokeStyle = "rgba(0,0,0,0.2)";
       ctx.lineWidth = 1;
-      const brickH = 28;
-      const brickW = 86;
-      for (let row = 0; row * brickH + grassH < h; row++) {
-        const offset = row % 2 === 0 ? 0 : brickW / 2;
-        const y = grassH + row * brickH;
+      for (let y = grassH + 30; y < h; y += 35) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w, y);
         ctx.stroke();
-        for (let x = -offset; x < w; x += brickW) {
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x, y + brickH);
-          ctx.stroke();
-        }
       }
     },
     GROUND_W,
