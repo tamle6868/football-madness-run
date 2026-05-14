@@ -68,24 +68,64 @@ export function createStadiumTexture(scene: Phaser.Scene) {
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // Simple curved roof silhouette
-      ctx.fillStyle = "#060a1a";
+      // Stadium dome silhouette — solid black-ish curve so the eye sees
+      // "we're inside a sports arena". One curve, not a flag bunting party.
+      ctx.fillStyle = "#020410";
       ctx.beginPath();
-      ctx.moveTo(0, h * 0.36);
-      ctx.quadraticCurveTo(w / 2, h * 0.05, w, h * 0.36);
-      ctx.lineTo(w, h * 0.52);
-      ctx.quadraticCurveTo(w / 2, h * 0.2, 0, h * 0.52);
+      ctx.moveTo(0, h * 0.34);
+      ctx.quadraticCurveTo(w / 2, h * 0.02, w, h * 0.34);
+      ctx.lineTo(w, h * 0.56);
+      ctx.quadraticCurveTo(w / 2, h * 0.22, 0, h * 0.56);
       ctx.closePath();
       ctx.fill();
 
-      // Subtle roof trusses
-      ctx.strokeStyle = "rgba(100,130,200,0.1)";
+      // Faint rim light along the inner edge of the dome — suggests stadium
+      // lighting reflecting off the underside without any glare on the user.
+      ctx.strokeStyle = "rgba(150,180,230,0.18)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.56);
+      ctx.quadraticCurveTo(w / 2, h * 0.22, w, h * 0.56);
+      ctx.stroke();
+
+      // A second, thicker, much dimmer rim above for layered depth.
+      ctx.strokeStyle = "rgba(110,140,200,0.10)";
       ctx.lineWidth = 2;
-      for (let x = -120; x < w + 120; x += 160) {
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.34);
+      ctx.quadraticCurveTo(w / 2, h * 0.02, w, h * 0.34);
+      ctx.stroke();
+
+      // Subtle roof trusses (vertical-ish posts diving into the dome) so the
+      // structure reads as a real roof, not just a band of dark color.
+      ctx.strokeStyle = "rgba(120,150,210,0.12)";
+      ctx.lineWidth = 1.5;
+      for (let i = 1; i < 8; i++) {
+        const t = i / 8;
+        const tx = t * w;
+        // Approximate y on the inner dome curve at this x via quadratic.
+        const innerY = h * 0.56 + (h * 0.22 - h * 0.56) * (1 - Math.pow(2 * t - 1, 2));
+        const outerY = h * 0.34 + (h * 0.02 - h * 0.34) * (1 - Math.pow(2 * t - 1, 2));
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x + 90, h * 0.3);
+        ctx.moveTo(tx, outerY);
+        ctx.lineTo(tx, innerY);
         ctx.stroke();
+      }
+
+      // Two small dim spotlight dots along the inner rim — they read as
+      // "ceiling lights" without flashing the user. Alpha 0.18 max.
+      for (const [tx, ty] of [
+        [w * 0.32, h * 0.31],
+        [w * 0.68, h * 0.31],
+      ]) {
+        const halo = ctx.createRadialGradient(tx, ty, 1, tx, ty, 28);
+        halo.addColorStop(0, "rgba(200,215,245,0.18)");
+        halo.addColorStop(0.5, "rgba(140,170,220,0.06)");
+        halo.addColorStop(1, "rgba(80,110,180,0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 28, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       // Two very faint beams in normal (source-over) blend — never `lighter`,
