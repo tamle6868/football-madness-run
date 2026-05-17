@@ -41,12 +41,7 @@ export class IntroScene extends Phaser.Scene {
     );
     ground.tileScaleY = (GAME_HEIGHT - GROUND_Y) / 200;
 
-    // Subtle gradient at top only for text readability (no full-screen dim)
-    const dim = this.add.graphics();
-    dim.fillStyle(0x000000, 0.25);
-    dim.fillRect(0, 0, GAME_WIDTH, 120);
-    dim.fillStyle(0x000000, 0.12);
-    dim.fillRect(0, 120, GAME_WIDTH, 80);
+    // Subtle gradient removed
 
     const logo = this.add
       .image(GAME_WIDTH / 2, 115, "logo")

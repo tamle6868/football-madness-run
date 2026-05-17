@@ -50,7 +50,7 @@ export class PreloadScene extends Phaser.Scene {
     });
     this.load.on("complete", () => title.setText("BUILDING SCENE..."));
 
-    const v = "v3";
+    const v = "v4";
 
     // --- Backgrounds (used as TileSprites, loaded at native size) ---
     this.load.image("bg-sky", `/assets/user/bg_sky.png?v=${v}`);
@@ -82,6 +82,16 @@ export class PreloadScene extends Phaser.Scene {
 
     // --- Trophy ---
     this.load.image("_raw_trophy", `/assets/user/trophy_full.png?v=${v}`);
+
+    // --- UI Buttons ---
+    this.load.image("_raw_btn-slide", `/assets/user/btn_slide.png?v=${v}`);
+    this.load.image("_raw_btn-jump", `/assets/user/btn_jump.png?v=${v}`);
+    this.load.image("_raw_btn-super", `/assets/user/btn_super.png?v=${v}`);
+    this.load.image("_raw_btn-pause", `/assets/user/btn_pause.png?v=${v}`);
+
+    this.load.image("panel_1", `/assets/user/panel_1.png?v=${v}`);
+    this.load.image("panel_2", `/assets/user/panel_2.png?v=${v}`);
+    this.load.image("panel_3", `/assets/user/panel_3.png?v=${v}`);
   }
 
   create() {
@@ -115,6 +125,12 @@ export class PreloadScene extends Phaser.Scene {
 
     // Trophy: 210×270 × 0.52 = 109×140
     this.preResize("_raw_trophy", "trophy", 109, 140);
+
+    // Buttons (pre-resized to exact display pixels)
+    this.preResize("_raw_btn-slide", "btn-slide", 78, 78);
+    this.preResize("_raw_btn-jump", "btn-jump", 78, 78);
+    this.preResize("_raw_btn-super", "btn-super", 110, 110);
+    this.preResize("_raw_btn-pause", "btn-pause", 58, 52);
 
     // ---- Procedural textures for things that have no PNG ----
     createUITextures(this);   // buttons, auras, speech bubble

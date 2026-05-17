@@ -69,118 +69,13 @@ function drawCircleBtn(
 
 export function createUITextures(scene: Phaser.Scene) {
   // SLIDE button (down arrow)
-  commitCanvasAsTexture(
-    scene,
-    "btn-slide",
-    (ctx, w, h) => {
-      drawCircleBtn(ctx, w, h, "rgba(80,140,255,0.4)", (c) => {
-        c.fillStyle = "#ffffff";
-        c.beginPath();
-        c.moveTo(w / 2, h / 2 + 18);
-        c.lineTo(w / 2 - 14, h / 2 - 4);
-        c.lineTo(w / 2 - 6, h / 2 - 4);
-        c.lineTo(w / 2 - 6, h / 2 - 18);
-        c.lineTo(w / 2 + 6, h / 2 - 18);
-        c.lineTo(w / 2 + 6, h / 2 - 4);
-        c.lineTo(w / 2 + 14, h / 2 - 4);
-        c.closePath();
-        c.fill();
-      });
-    },
-    140,
-    140
-  );
+  // btn-slide loaded as PNG
 
   // JUMP button (up arrow)
-  commitCanvasAsTexture(
-    scene,
-    "btn-jump",
-    (ctx, w, h) => {
-      drawCircleBtn(ctx, w, h, "rgba(80,140,255,0.4)", (c) => {
-        c.fillStyle = "#ffffff";
-        c.beginPath();
-        c.moveTo(w / 2, h / 2 - 18);
-        c.lineTo(w / 2 - 14, h / 2 + 4);
-        c.lineTo(w / 2 - 6, h / 2 + 4);
-        c.lineTo(w / 2 - 6, h / 2 + 18);
-        c.lineTo(w / 2 + 6, h / 2 + 18);
-        c.lineTo(w / 2 + 6, h / 2 + 4);
-        c.lineTo(w / 2 + 14, h / 2 + 4);
-        c.closePath();
-        c.fill();
-      });
-    },
-    140,
-    140
-  );
+  // btn-jump loaded as PNG
 
   // SUPER button (running figure)
-  commitCanvasAsTexture(
-    scene,
-    "btn-super",
-    (ctx, w, h) => {
-      drawCircleBtn(ctx, w, h, "rgba(80,180,255,0.7)", (c) => {
-        c.save();
-        c.translate(w / 2, h / 2);
-        // Speed lines
-        c.strokeStyle = "rgba(180,220,255,0.9)";
-        c.lineWidth = 3;
-        for (let i = -2; i <= 2; i++) {
-          c.beginPath();
-          c.moveTo(-26 + i * 2, -12 + i * 6);
-          c.lineTo(-46, -12 + i * 6);
-          c.stroke();
-        }
-        // Runner figure
-        c.fillStyle = "#ffffff";
-        c.beginPath();
-        c.arc(8, -22, 7, 0, Math.PI * 2); // head
-        c.fill();
-        // Body
-        c.beginPath();
-        c.moveTo(0, -16);
-        c.lineTo(14, -16);
-        c.lineTo(20, 6);
-        c.lineTo(8, 4);
-        c.closePath();
-        c.fill();
-        // Front leg
-        c.beginPath();
-        c.moveTo(8, 4);
-        c.lineTo(28, 18);
-        c.lineTo(30, 22);
-        c.lineTo(12, 14);
-        c.closePath();
-        c.fill();
-        // Back leg
-        c.beginPath();
-        c.moveTo(2, -2);
-        c.lineTo(-12, 18);
-        c.lineTo(-6, 22);
-        c.lineTo(8, 4);
-        c.closePath();
-        c.fill();
-        // Arms
-        c.beginPath();
-        c.moveTo(8, -10);
-        c.lineTo(-8, -2);
-        c.lineTo(-4, 6);
-        c.lineTo(12, -4);
-        c.closePath();
-        c.fill();
-        c.beginPath();
-        c.moveTo(14, -12);
-        c.lineTo(28, -8);
-        c.lineTo(24, 0);
-        c.lineTo(12, -4);
-        c.closePath();
-        c.fill();
-        c.restore();
-      });
-    },
-    180,
-    180
-  );
+  // btn-super loaded as PNG
 
   // Magnet boost
   commitCanvasAsTexture(

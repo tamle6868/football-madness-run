@@ -39,13 +39,7 @@ export class UIScene extends Phaser.Scene {
 
   create() {
     // ---------- TOP BAR ----------
-    const topPanel = this.add.graphics();
-    topPanel.fillStyle(0x000000, 0.35);
-    topPanel.fillRect(0, 0, GAME_WIDTH, 22);
-    topPanel.fillStyle(0x000000, 0.22);
-    topPanel.fillRect(0, 22, GAME_WIDTH, 60);
-    topPanel.fillStyle(0x000000, 0.0);
-    topPanel.fillRect(0, 82, GAME_WIDTH, 28);
+    // (Dark background removed for clarity)
 
     // Logo small (top-left)
     this.add.image(110, 60, "logo").setScale(0.32).setOrigin(0.5);
@@ -154,19 +148,13 @@ export class UIScene extends Phaser.Scene {
       })
       .setOrigin(0, 0);
 
-    // Pause button
-    const pauseBtn = this.add.graphics();
-    pauseBtn.fillStyle(0x0c1432, 0.85);
-    pauseBtn.fillRoundedRect(GAME_WIDTH - 80, 16, 60, 50, 10);
-    pauseBtn.lineStyle(2, 0x6a8aff, 0.6);
-    pauseBtn.strokeRoundedRect(GAME_WIDTH - 80, 16, 60, 50, 10);
-    this.add.rectangle(GAME_WIDTH - 56, 41, 6, 22, 0xffffff);
-    this.add.rectangle(GAME_WIDTH - 44, 41, 6, 22, 0xffffff);
-    this.add
-      .zone(GAME_WIDTH - 50, 41, 60, 50)
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", () => {
+    // Pause button (preResized to 58x52 in PreloadScene)
+    const pauseBtn = this.add
+      .image(GAME_WIDTH - 50, 41, "btn-pause")
+      .setScale(1.0)
+      .setInteractive({ useHandCursor: true });
+      
+    pauseBtn.on("pointerdown", () => {
         if (this.scene.isPaused("GameScene")) {
           this.scene.resume("GameScene");
         } else {
@@ -209,41 +197,22 @@ export class UIScene extends Phaser.Scene {
     // ---------- BOTTOM BAR ----------
     const bottomY = GAME_HEIGHT - 96;
     const bottomH = 96;
-    const bottomPanel2 = this.add.graphics();
-    bottomPanel2.fillStyle(0x000000, 0.5);
-    bottomPanel2.fillRect(0, bottomY, GAME_WIDTH, bottomH);
 
-    // Slide button (fixed left)
+    // Slide button (preResized to 78x78)
     const slideBtn = this.add
       .image(72, bottomY + 38, "btn-slide")
-      .setScale(0.68)
+      .setScale(1.0)
       .setInteractive({ useHandCursor: true });
-    this.add
-      .text(72, bottomY + 64, "SLIDE", {
-        fontFamily: "sans-serif",
-        fontSize: "12px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
     this.bindButton(slideBtn, () => this.game.events.emit("ui:slide"));
     this.bindTouchZone(72, bottomY + 38, 98, 78, slideBtn, () =>
       this.game.events.emit("ui:slide")
     );
 
-    // Jump button (fixed left)
+    // Jump button (preResized to 78x78)
     const jumpBtn = this.add
-      .image(150, bottomY + 38, "btn-jump")
-      .setScale(0.68)
+      .image(156, bottomY + 38, "btn-jump")
+      .setScale(1.0)
       .setInteractive({ useHandCursor: true });
-    this.add
-      .text(150, bottomY + 64, "JUMP", {
-        fontFamily: "sans-serif",
-        fontSize: "12px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
     this.bindButton(jumpBtn, () => this.game.events.emit("ui:jump"));
     this.bindTouchZone(150, bottomY + 38, 98, 78, jumpBtn, () =>
       this.game.events.emit("ui:jump")
@@ -270,45 +239,9 @@ export class UIScene extends Phaser.Scene {
     const boostsX = mmX + mmW + panelGap;
 
     // --- Daily Challenge panel ---
-    const dcPanel = this.add.image(dcX + dcW / 2, bottomY + 40, "panel");
+    const dcPanel = this.add.image(dcX + dcW / 2, bottomY + 40, "panel_1");
+    // Native size or scaled to fit
     dcPanel.setDisplaySize(dcW, 58);
-
-    const calG = this.add.graphics();
-    calG.fillStyle(0xffffff, 1);
-    calG.fillRoundedRect(dcX + 12, bottomY + 15, 30, 32, 4);
-    calG.fillStyle(0xff3845, 1);
-    calG.fillRect(dcX + 12, bottomY + 15, 30, 11);
-    calG.fillStyle(0x0b1020, 1);
-    calG.fillRect(dcX + 18, bottomY + 12, 3, 7);
-    calG.fillRect(dcX + 33, bottomY + 12, 3, 7);
-    this.add
-      .text(dcX + 27, bottomY + 36, "7", {
-        fontFamily: "sans-serif",
-        fontSize: "17px",
-        fontStyle: "bold",
-        color: "#0b1020",
-      })
-      .setOrigin(0.5);
-
-    this.add.text(dcX + 52, bottomY + 13, "DAILY CHALLENGE", {
-      fontFamily: "sans-serif",
-      fontSize: "10px",
-      color: "#ffd23a",
-      fontStyle: "bold",
-    });
-    this.add.text(dcX + 52, bottomY + 27, "Survive 1000m\nWithout Hitting VAR", {
-      fontFamily: "sans-serif",
-      fontSize: "9px",
-      color: "#ffffff",
-      lineSpacing: 1,
-    });
-    this.add.image(dcX + dcW - 40, bottomY + 22, "coin-0").setScale(0.28);
-    this.add.text(dcX + dcW - 27, bottomY + 16, "500", {
-      fontFamily: "sans-serif",
-      fontSize: "13px",
-      color: "#ffd23a",
-      fontStyle: "bold",
-    });
 
     const dailyBarBg = this.add.graphics();
     dailyBarBg.fillStyle(0x000000, 0.6);
@@ -327,42 +260,17 @@ export class UIScene extends Phaser.Scene {
       .setOrigin(1, 0);
 
     // --- Mad Meter panel ---
-    const mmPanel = this.add.image(mmX + mmW / 2, bottomY + 40, "panel");
+    const mmPanel = this.add.image(mmX + mmW / 2, bottomY + 40, "panel_2");
     mmPanel.setDisplaySize(mmW, 58);
-    this.add
-      .text(mmX + mmW / 2, bottomY + 11, "MAD METER", {
-        fontFamily: "sans-serif",
-        fontSize: "13px",
-        color: "#32d264",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5, 0);
+
     const mmBgG = this.add.graphics();
     mmBgG.fillStyle(0x000000, 0.6);
     mmBgG.fillRoundedRect(mmX + 16, bottomY + 30, mmW - 64, 16, 4);
     this.madBar = this.add.graphics();
-    const avatarG = this.add.graphics();
-    avatarG.fillStyle(0xf2c4a0, 1);
-    avatarG.fillCircle(mmX + mmW - 27, bottomY + 38, 13);
-    avatarG.fillStyle(0x2a1a0c, 1);
-    avatarG.beginPath();
-    avatarG.arc(mmX + mmW - 27, bottomY + 29, 13, Math.PI, 0);
-    avatarG.fillPath();
-    avatarG.fillStyle(0x0b1020, 1);
-    avatarG.fillCircle(mmX + mmW - 31, bottomY + 38, 1.5);
-    avatarG.fillCircle(mmX + mmW - 23, bottomY + 38, 1.5);
 
     // --- Boosts panel ---
-    const boostsPanel = this.add.image(boostsX + boostsW / 2, bottomY + 40, "panel");
+    const boostsPanel = this.add.image(boostsX + boostsW / 2, bottomY + 40, "panel_3");
     boostsPanel.setDisplaySize(boostsW, 58);
-    this.add
-      .text(boostsX + boostsW / 2, bottomY + 11, "BOOSTS", {
-        fontFamily: "sans-serif",
-        fontSize: "12px",
-        color: "#a0d0ff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5, 0);
     const magnetBtn = this.add
       .image(boostsX + boostsW * 0.32, bottomY + 39, "boost-magnet")
       .setScale(0.5)
@@ -395,27 +303,11 @@ export class UIScene extends Phaser.Scene {
       .setOrigin(0.5);
     this.bindButton(shieldBtn, () => this.useShield());
 
-    // --- SUPER button (fixed right) ---
+    // --- SUPER button (preResized to 110x110)
     this.superBtnGlow = this.add
       .image(GAME_WIDTH - 76, bottomY + 36, "btn-super")
-      .setScale(0.58)
+      .setScale(1.0)
       .setInteractive({ useHandCursor: true });
-    this.add
-      .text(GAME_WIDTH - 76, bottomY + 62, "SUPER", {
-        fontFamily: "sans-serif",
-        fontSize: "13px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(GAME_WIDTH - 76, bottomY + 77, "HOLD TO RUN", {
-        fontFamily: "sans-serif",
-        fontSize: "8px",
-        color: "#a0d0ff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
 
     this.bindButton(this.superBtnGlow, () => this.game.events.emit("ui:super"));
     this.bindTouchZone(
